@@ -9,7 +9,11 @@ cmake_minimum_required(VERSION 3.22.1)
 # Since this is the top level CMakeLists.txt, the project name is also accessible
 # with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
 # build script scope).
-project("app")
+project("descansa")
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -26,7 +30,12 @@ project("app")
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
-        native-lib.cpp)
+        native-lib.cpp
+        DescansaCore.cpp)
+
+# Include directories for headers
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
@@ -35,3 +44,13 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
         log)
+
+# Compiler flags for better compatibility and warnings
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+        -Wall
+        -Wextra
+        -std=c++11)
+
+# Define preprocessor macros if needed
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        ANDROID_PLATFORM)
