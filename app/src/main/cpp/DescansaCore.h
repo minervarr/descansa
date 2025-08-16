@@ -89,6 +89,10 @@ namespace descansa {
         std::string get_status_summary() const;
         bool has_slept_today() const;
         Duration get_time_since_last_wake() const;
+
+        bool is_in_sleep_period() const;
+        bool is_before_target_wake_time() const;
+        Duration get_time_until_target_wake() const;
     };
 
 // Utility functions

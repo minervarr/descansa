@@ -71,4 +71,20 @@
     <string name="time_past_bedtime">Past bedtime!</string>
     <string name="time_session_active">Session active</string>
     <string name="time_sleeping_status">Sleeping...</string>
+
+    <!-- Sleep period status messages -->
+    <string name="status_should_be_sleeping">You should be sleeping</string>
+    <string name="status_good_morning">Good morning!</string>
+
+    <!-- Sleep period labels -->
+    <string name="label_wake_up_in">Wake up in:</string>
+    <string name="label_work_time_today">Work time today:</string>
+
+    <!-- Sleep period format strings -->
+    <string name="format_wake_up_in">%s %s</string>
+    <string name="format_work_time_today">%s %s</string>
+
+    <!-- Status variations -->
+    <string name="work_time_sleeping">Sleeping...</string>
+    <string name="work_time_past_bedtime">Past bedtime!</string>
 </resources>

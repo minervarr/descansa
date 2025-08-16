@@ -316,4 +316,32 @@ namespace descansa {
 
     } // namespace utils
 
+    // Add these implementations to DescansaCore.cpp:
+
+    bool DescansaCore::is_in_sleep_period() const {
+        TimePoint now = utils::now();
+        TimePoint today_wake = get_today_target_wake_time();
+        TimePoint tonight_bedtime = get_next_recommended_bedtime();
+
+        // If current time is between bedtime and wake time
+        return (now >= tonight_bedtime) || (now < today_wake);
+    }
+
+    bool DescansaCore::is_before_target_wake_time() const {
+        TimePoint now = utils::now();
+        TimePoint today_wake = get_today_target_wake_time();
+        return now < today_wake;
+    }
+
+    Duration DescansaCore::get_time_until_target_wake() const {
+        TimePoint now = utils::now();
+        TimePoint today_wake = get_today_target_wake_time();
+
+        if (now >= today_wake) {
+            return Duration(0); // Return zero if wake time passed
+        }
+
+        return std::chrono::duration_cast<Duration>(today_wake - now);
+    }
+
 } // namespace descansa

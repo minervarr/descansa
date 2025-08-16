@@ -255,4 +255,29 @@ Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(
     return env->NewStringUTF("Session active");
 }
 
+// Sleep period detection
+JNIEXPORT jboolean JNICALL
+Java_io_nava_descansa_app_MainActivity_isInSleepPeriod(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    return g_core->is_in_sleep_period();
+}
+
+JNIEXPORT jboolean JNICALL
+Java_io_nava_descansa_app_MainActivity_isBeforeTargetWakeTime(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    return g_core->is_before_target_wake_time();
+}
+
+// Formatted time until wake
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getTimeUntilWakeFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    auto duration = g_core->get_time_until_target_wake();
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
+}
+
 } // extern "C"
