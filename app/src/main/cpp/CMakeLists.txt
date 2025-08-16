@@ -31,7 +31,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${CMAKE_PROJECT_NAME} SHARED
         # List C/C++ source files with relative paths to this CMakeLists.txt.
         native-lib.cpp
-        DescansaCore.cpp)
+        DescansaCore.cpp
+        SleepDataStructures.cpp
+        DescansaCoreManager.cpp)
 
 # Include directories for headers
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -49,8 +51,20 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wall
         -Wextra
+        -Wno-unused-parameter
+        -Wno-unused-function
         -std=c++11)
 
 # Define preprocessor macros if needed
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
         ANDROID_PLATFORM)
+
+# Optional: Enable optimization for release builds
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -O2)
+endif()
+
+# Optional: Add debug symbols for debug builds
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g)
+endif()
