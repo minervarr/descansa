@@ -66,4 +66,9 @@
     <string name="desc_last_sleep">Duration of your most recent sleep</string>
     <string name="desc_target_sleep">How many hours you want to sleep each night</string>
     <string name="desc_target_wake">What time you want to wake up each day</string>
+
+    <!-- Add these to your existing strings.xml -->
+    <string name="time_past_bedtime">Past bedtime!</string>
+    <string name="time_session_active">Session active</string>
+    <string name="time_sleeping_status">Sleeping...</string>
 </resources>

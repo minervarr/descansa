@@ -207,4 +207,52 @@ Java_io_nava_descansa_app_MainActivity_getDetailedStatus(
     return env->NewStringUTF(detailed_status.c_str());
 }
 
+// Add these new formatted methods after your existing JNI methods:
+
+// Formatted remaining work time
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getRemainingWorkTimeFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    auto duration = g_core->get_remaining_work_time();
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
+}
+
+// Formatted last sleep duration
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getLastSleepDurationFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    auto duration = g_core->get_last_sleep_duration();
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
+}
+
+// Formatted average sleep duration
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getAverageSleepDurationFormatted(
+        JNIEnv* env, jobject /* this */, jint days) {
+    ensure_core_initialized();
+    auto duration = g_core->get_average_sleep_duration(days);
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
+}
+
+// Formatted current session duration (for active sessions)
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+
+    if (!g_core->is_session_running()) {
+        return env->NewStringUTF("0h 0m");
+    }
+
+    // Calculate elapsed time since session start
+    // Note: This requires access to session start time
+    // For now, we'll return a placeholder until we enhance DescansaCore
+    return env->NewStringUTF("Session active");
+}
+
 } // extern "C"

@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     private Button exportButton;
     private Button settingsButton;
     private Button clearDataButton;
+    public native String getRemainingWorkTimeFormatted();
+    public native String getLastSleepDurationFormatted();
+    public native String getAverageSleepDurationFormatted(int days);
+    public native String getCurrentSessionDurationFormatted();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,10 +116,9 @@ public class MainActivity extends AppCompatActivity {
             statusText.setText(getString(R.string.status_sleeping));
             sleepButton.setText(getString(R.string.btn_end_sleep));
 
-            // Show current session duration
-            double currentHours = getCurrentSessionHours();
-            currentSessionText.setText(String.format(Locale.getDefault(),
-                    "Current session: %.1f hours", currentHours));
+            // Show current session duration using formatted method
+            String currentDuration = getCurrentSessionDurationFormatted();
+            currentSessionText.setText("Current session: " + currentDuration);
             currentSessionText.setVisibility(TextView.VISIBLE);
 
             // Hide work time when sleeping
@@ -125,30 +128,27 @@ public class MainActivity extends AppCompatActivity {
             sleepButton.setText(getString(R.string.btn_start_sleep));
             currentSessionText.setVisibility(TextView.GONE);
 
-            // Show remaining work time
-            double workHours = getRemainingWorkHours();
-            if (workHours > 0) {
-                workTimeText.setText(String.format(Locale.getDefault(),
-                        "%s %.1f hours", getString(R.string.label_work_time_remaining), workHours));
+            // Show remaining work time using formatted method
+            String workTime = getRemainingWorkTimeFormatted();
+            if (!workTime.equals("0h 0m")) {
+                workTimeText.setText(getString(R.string.label_work_time_remaining) + " " + workTime);
             } else {
                 workTimeText.setText("Work time: Past bedtime!");
             }
         }
 
-        // Update sleep statistics
-        double lastSleep = getLastSleepHours();
-        if (lastSleep > 0) {
-            lastSleepText.setText(String.format(Locale.getDefault(),
-                    "%s %.1f hours", getString(R.string.label_last_sleep_duration), lastSleep));
+        // Update sleep statistics using formatted methods
+        String lastSleep = getLastSleepDurationFormatted();
+        if (!lastSleep.equals("0h 0m")) {
+            lastSleepText.setText(getString(R.string.label_last_sleep_duration) + " " + lastSleep);
         } else {
             lastSleepText.setText(getString(R.string.label_last_sleep_duration) + " " +
                     getString(R.string.default_no_data));
         }
 
-        double avgSleep = getAverageSleepHours(7);
-        if (avgSleep > 0) {
-            averageSleepText.setText(String.format(Locale.getDefault(),
-                    "%s %.1f hours", getString(R.string.label_average_sleep), avgSleep));
+        String avgSleep = getAverageSleepDurationFormatted(7);
+        if (!avgSleep.equals("0h 0m")) {
+            averageSleepText.setText(getString(R.string.label_average_sleep) + " " + avgSleep);
         } else {
             averageSleepText.setText(getString(R.string.label_average_sleep) + " " +
                     getString(R.string.default_no_data));
