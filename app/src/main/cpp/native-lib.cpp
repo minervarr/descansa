@@ -169,4 +169,42 @@ Java_io_nava_descansa_app_MainActivity_stringFromJNI(
     return env->NewStringUTF(hello.c_str());
 }
 
+// Get current session duration in hours (for active sessions)
+JNIEXPORT jdouble JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentSessionHours(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+
+    if (!g_core->is_session_running()) {
+        return 0.0; // No active session
+    }
+
+    // Calculate time since session started
+    // This requires access to session start time, which isn't exposed in current DescansaCore
+    // For now, return a simple calculation based on status
+
+    // Since we don't have direct access to session start time in the current API,
+    // we'll need to modify DescansaCore to expose this information
+    // For immediate implementation, return 0 and handle in Java layer
+    return 0.0;
+}
+
+// Alternative: Get a detailed status string that includes current session info
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getDetailedStatus(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+
+    std::string detailed_status;
+
+    if (g_core->is_session_running()) {
+        detailed_status = "Sleep session active\n";
+        detailed_status += "Duration: Calculating...\n";
+    } else {
+        detailed_status = g_core->get_status_summary();
+    }
+
+    return env->NewStringUTF(detailed_status.c_str());
+}
+
 } // extern "C"

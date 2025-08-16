@@ -1,3 +1,69 @@
 <resources>
-    <string name="app_name">descansa</string>
+    <!-- App Identity -->
+    <string name="app_name">Descansa</string>
+    <string name="app_subtitle">Simple Sleep Tracker</string>
+
+    <!-- Main Status Messages -->
+    <string name="status_awake">AWAKE - Tracking work time</string>
+    <string name="status_sleeping">SLEEPING - Session active</string>
+    <string name="status_ready">Ready to track sleep</string>
+
+    <!-- Action Buttons -->
+    <string name="btn_start_sleep">Start Sleep Session</string>
+    <string name="btn_end_sleep">End Sleep Session</string>
+    <string name="btn_export_data">Export Sleep Data</string>
+    <string name="btn_clear_data">Clear All Data</string>
+    <string name="btn_settings">Settings</string>
+
+    <!-- Time Display Labels -->
+    <string name="label_work_time_remaining">Work time remaining:</string>
+    <string name="label_last_sleep_duration">Last sleep duration:</string>
+    <string name="label_average_sleep">Average sleep (7 days):</string>
+    <string name="label_session_count">Total sessions:</string>
+    <string name="label_current_session">Current session:</string>
+
+    <!-- Settings Labels -->
+    <string name="label_target_sleep_hours">Target sleep hours:</string>
+    <string name="label_target_wake_time">Target wake time:</string>
+    <string name="label_wake_hour">Wake hour (0-23):</string>
+    <string name="label_wake_minute">Wake minute (0-59):</string>
+
+    <!-- Time Format Helpers -->
+    <string name="format_hours_minutes">%1$dh %2$dm</string>
+    <string name="format_time_hm">%1$02d:%2$02d</string>
+    <string name="format_decimal_hours">%.1f hours</string>
+
+    <!-- Status Messages -->
+    <string name="msg_sleep_started">Sleep session started</string>
+    <string name="msg_sleep_ended">Sleep session ended</string>
+    <string name="msg_data_exported">Data exported successfully</string>
+    <string name="msg_data_cleared">All data cleared</string>
+    <string name="msg_settings_saved">Settings saved</string>
+
+    <!-- Error Messages -->
+    <string name="error_export_failed">Failed to export data</string>
+    <string name="error_no_sessions">No sleep sessions recorded</string>
+    <string name="error_session_active">Sleep session already active</string>
+    <string name="error_no_active_session">No active sleep session</string>
+    <string name="error_invalid_time">Invalid time format</string>
+
+    <!-- Informational Messages -->
+    <string name="info_first_use">Welcome! Set your target wake time and start tracking sleep.</string>
+    <string name="info_export_location">Data exported to Documents folder</string>
+    <string name="info_session_running">Sleep session is currently running</string>
+
+    <!-- Default Values -->
+    <string name="default_no_data">--</string>
+    <string name="default_zero_time">0h 0m</string>
+
+    <!-- Debugging Messages -->
+    <string name="debug_core_status">Core Status:</string>
+    <string name="debug_session_active">Session Active: %1$s</string>
+    <string name="debug_data_loaded">Data Loaded: %1$s</string>
+
+    <!-- Simple Descriptions -->
+    <string name="desc_remaining_time">Time left before recommended bedtime</string>
+    <string name="desc_last_sleep">Duration of your most recent sleep</string>
+    <string name="desc_target_sleep">How many hours you want to sleep each night</string>
+    <string name="desc_target_wake">What time you want to wake up each day</string>
 </resources>
