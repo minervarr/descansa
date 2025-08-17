@@ -88,4 +88,30 @@
     <string name="label_app_opens">App Opens:</string>
     <string name="status_phone_last_used">Last used: %s</string>
 
+    <!-- Theme Selection Strings - Updated for hierarchical selection -->
+    <string name="dialog_theme_title">Choose Theme</string>
+    <string name="dialog_dark_theme_title">Dark Theme Options</string>
+
+    <!-- Main Theme Options -->
+    <string name="theme_system">Follow System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <!-- Dark Theme Sub-options -->
+    <string name="theme_dark_standard">Standard Dark</string>
+    <string name="theme_dark_amoled">AMOLED Black</string>
+
+    <!-- Theme Messages -->
+    <string name="msg_theme_applied">Theme applied</string>
+    <string name="msg_theme_standard_dark">Standard dark applied</string>
+    <string name="msg_theme_amoled">AMOLED black applied</string>
+    <string name="msg_theme_failed">Theme change failed</string>
+
+    <!-- Theme Button (still needed for layout) -->
+    <string name="btn_theme">Theme</string>
+    <string name="desc_theme_button">Change app theme</string>
+
+    <!-- Dialog Buttons -->
+    <string name="btn_back">Back</string>
+
 </resources>

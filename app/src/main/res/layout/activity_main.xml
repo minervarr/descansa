@@ -16,7 +16,7 @@
         android:clipToPadding="false"
         android:fitsSystemWindows="true">
 
-        <!-- Header Section - Fixed Touch Target -->
+        <!-- Header Section - Updated with Theme Button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,7 +34,22 @@
                 android:textStyle="bold"
                 android:textColor="?android:attr/textColorPrimary" />
 
-            <!-- FIXED: Minimum 48dp touch target -->
+            <!-- NEW: Theme Button -->
+            <Button
+                android:id="@+id/theme_button"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="@string/btn_theme"
+                android:textSize="12sp"
+                android:minWidth="80dp"
+                android:minHeight="48dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="@string/desc_theme_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+            <!-- Settings Button -->
             <Button
                 android:id="@+id/settings_button"
                 android:layout_width="wrap_content"

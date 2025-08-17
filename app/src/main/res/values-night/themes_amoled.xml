@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AMOLED Theme Family -->
+    <style name="Theme.Descansa.AMOLED" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/amoled_primary</item>
+        <item name="colorPrimaryVariant">@color/amoled_primary_variant</item>
+        <item name="colorOnPrimary">@color/amoled_on_primary</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/amoled_secondary</item>
+        <item name="colorSecondaryVariant">@color/amoled_secondary_variant</item>
+        <item name="colorOnSecondary">@color/amoled_on_secondary</item>
+
+        <!-- AMOLED Pure Black Backgrounds -->
+        <item name="android:colorBackground">@color/amoled_background</item>
+        <item name="colorSurface">@color/amoled_surface</item>
+        <item name="colorOnSurface">@color/amoled_on_surface</item>
+        <item name="colorOnBackground">@color/amoled_on_background</item>
+
+        <!-- Status and Navigation -->
+        <item name="android:statusBarColor">@color/amoled_background</item>
+        <item name="android:navigationBarColor">@color/amoled_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">@color/amoled_text_primary</item>
+        <item name="android:textColorSecondary">@color/amoled_text_secondary</item>
+        <item name="android:textColorTertiary">@color/amoled_text_tertiary</item>
+
+        <!-- Window Background -->
+        <item name="android:windowBackground">@color/amoled_background</item>
+    </style>
+</resources>

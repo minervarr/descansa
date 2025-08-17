@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AMOLED Theme Colors -->
+
+    <!-- Primary Colors -->
+    <color name="amoled_primary">#BB86FC</color>              <!-- Light purple for AMOLED -->
+    <color name="amoled_primary_variant">#3700B3</color>      <!-- Dark purple variant -->
+    <color name="amoled_on_primary">#000000</color>           <!-- Black text on purple -->
+
+    <!-- Secondary Colors -->
+    <color name="amoled_secondary">#03DAC6</color>            <!-- Teal accent -->
+    <color name="amoled_secondary_variant">#018786</color>    <!-- Dark teal -->
+    <color name="amoled_on_secondary">#000000</color>         <!-- Black text on teal -->
+
+    <!-- Background Colors - Pure AMOLED Black -->
+    <color name="amoled_background">#000000</color>           <!-- Pure black -->
+    <color name="amoled_surface">#111111</color>              <!-- Very dark gray -->
+    <color name="amoled_on_surface">#FFFFFF</color>           <!-- White on dark -->
+    <color name="amoled_on_background">#FFFFFF</color>        <!-- White on black -->
+
+    <!-- Text Colors -->
+    <color name="amoled_text_primary">#FFFFFF</color>         <!-- Pure white -->
+    <color name="amoled_text_secondary">#B3B3B3</color>       <!-- Light gray -->
+    <color name="amoled_text_tertiary">#808080</color>        <!-- Medium gray -->
+
+    <!-- Error Colors -->
+    <color name="amoled_error">#CF6679</color>                <!-- Light red for errors -->
+    <color name="amoled_on_error">#000000</color>             <!-- Black text on error -->
+</resources>

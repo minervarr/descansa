@@ -106,12 +106,16 @@ namespace descansa {
         std::ofstream file(data_file_path);
         if (!file.is_open()) return false;
 
-        // Save config
+        // Save config (UPDATED)
         file << "CONFIG:" << config.target_sleep_hours.count() << ","
              << config.target_wake_hour.count() << ","
              << config.target_wake_minute.count() << "\n";
 
-        // Save sessions with full configuration context
+        // NEW: Save theme config
+        file << "THEME:" << static_cast<int>(theme_config.mode) << ","
+             << (theme_config.follow_system ? "1" : "0") << "\n";
+
+        // Save sessions with full configuration context (existing code)
         for (const auto& session : sleep_history) {
             if (session.is_complete) {
                 auto start_time_t = std::chrono::system_clock::to_time_t(session.sleep_start);
@@ -127,7 +131,7 @@ namespace descansa {
             }
         }
 
-        // Save current session if active
+        // Save current session if active (existing code)
         if (session_active) {
             auto start_time_t = std::chrono::system_clock::to_time_t(current_session_start);
             file << "ACTIVE:" << start_time_t << "\n";
@@ -136,7 +140,6 @@ namespace descansa {
         return file.good();
     }
 
-    // Fix for line 177-178, 191, 199 - Use auto for cast operations
     bool DescansaCore::load_data() {
         std::ifstream file(data_file_path);
         if (!file.is_open()) return false;
@@ -165,6 +168,22 @@ namespace descansa {
                     config.target_wake_minute = std::chrono::minutes(std::stoi(token));
                 }
             }
+                // NEW: Load theme config
+            else if (type == "THEME") {
+                std::istringstream ss(data);
+                std::string token;
+
+                if (std::getline(ss, token, ',')) {
+                    int theme_mode = std::stoi(token);
+                    // Validate theme mode range
+                    if (theme_mode >= 0 && theme_mode <= 3) {
+                        theme_config.mode = static_cast<ThemeMode>(theme_mode);
+                    }
+                }
+                if (std::getline(ss, token, ',')) {
+                    theme_config.follow_system = (token == "1");
+                }
+            }
             else if (type == "SESSION") {
                 std::istringstream ss(data);
                 std::string token;
@@ -175,7 +194,6 @@ namespace descansa {
                 }
 
                 if (tokens.size() >= 3) {  // Backward compatibility
-                    // Fix: Use auto for cast operations
                     auto start_t = static_cast<std::time_t>(std::stoll(tokens[0]));
                     auto end_t = static_cast<std::time_t>(std::stoll(tokens[1]));
 
@@ -211,12 +229,6 @@ namespace descansa {
         sleep_history.clear();
         save_data();
     }
-
-    // REMOVED UNUSED FUNCTIONS:
-    // - get_recent_sessions() - Never called anywhere
-    // - has_slept_today() - Never called anywhere
-    // - get_time_since_last_wake() - Never called anywhere
-    // - get_status_summary() - Not used in MainActivity
 
     bool DescansaCore::is_in_sleep_period() const {
         TimePoint now = utils::now();
@@ -300,48 +312,6 @@ namespace descansa {
         return file.good();
     }
 
-// Utility functions implementation - ONLY keeping functions that are actually used
-    namespace utils {
-
-        std::string format_duration(const Duration& d) {
-            int hours = static_cast<int>(d.count() / 3600);
-            int minutes = static_cast<int>((d.count() - hours * 3600) / 60);
-
-            std::ostringstream ss;
-            ss << hours << "h " << minutes << "m";
-            return ss.str();
-        }
-
-        std::string format_time(const TimePoint& tp) {
-            auto time_t = std::chrono::system_clock::to_time_t(tp);
-            auto tm = *std::localtime(&time_t);
-
-            std::ostringstream ss;
-            ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-            return ss.str();
-        }
-
-        TimePoint now() {
-            return std::chrono::system_clock::now();
-        }
-
-        TimePoint start_of_day(const TimePoint& tp) {
-            auto time_t = std::chrono::system_clock::to_time_t(tp);
-            auto tm = *std::localtime(&time_t);
-
-            tm.tm_hour = 0;
-            tm.tm_min = 0;
-            tm.tm_sec = 0;
-
-            return std::chrono::system_clock::from_time_t(std::mktime(&tm));
-        }
-
-        // REMOVED UNUSED UTILITY FUNCTIONS:
-        // - is_same_day() - Not used in current implementation
-        // - end_of_day() - Not used in current implementation
-
-    } // namespace utils
-
     Duration DescansaCore::get_time_until_next_wake() const {
         TimePoint now = utils::now();
         TimePoint today_wake = get_today_target_wake_time();
@@ -381,5 +351,59 @@ namespace descansa {
            << std::setfill('0') << std::setw(2) << tm.tm_min;
         return ss.str();
     }
+
+    // Theme management implementation (simplified)
+    void DescansaCore::set_theme_mode(ThemeMode mode) {
+        theme_config.mode = mode;
+
+        // If user manually selects a theme, disable system follow
+        if (mode != ThemeMode::SYSTEM_DEFAULT) {
+            theme_config.follow_system = false;
+        } else {
+            theme_config.follow_system = true;
+        }
+    }
+
+    ThemeMode DescansaCore::get_theme_mode() const {
+        return theme_config.mode;
+    }
+
+// Utility functions implementation - ONLY keeping functions that are actually used
+    namespace utils {
+
+        std::string format_duration(const Duration& d) {
+            int hours = static_cast<int>(d.count() / 3600);
+            int minutes = static_cast<int>((d.count() - hours * 3600) / 60);
+
+            std::ostringstream ss;
+            ss << hours << "h " << minutes << "m";
+            return ss.str();
+        }
+
+        std::string format_time(const TimePoint& tp) {
+            auto time_t = std::chrono::system_clock::to_time_t(tp);
+            auto tm = *std::localtime(&time_t);
+
+            std::ostringstream ss;
+            ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+            return ss.str();
+        }
+
+        TimePoint now() {
+            return std::chrono::system_clock::now();
+        }
+
+        TimePoint start_of_day(const TimePoint& tp) {
+            auto time_t = std::chrono::system_clock::to_time_t(tp);
+            auto tm = *std::localtime(&time_t);
+
+            tm.tm_hour = 0;
+            tm.tm_min = 0;
+            tm.tm_sec = 0;
+
+            return std::chrono::system_clock::from_time_t(std::mktime(&tm));
+        }
+
+    } // namespace utils
 
 } // namespace descansa
