@@ -15,6 +15,18 @@ project("descansa")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# FIXED: Add 16KB page size alignment for Android compatibility
+# This ensures the shared library works on devices with 16KB page sizes
+if(ANDROID)
+    # Set linker flags for 16KB alignment
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,common-page-size=16384")
+
+    # Additional alignment flags for all architectures
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,max-page-size=16384")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,common-page-size=16384")
+endif()
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -47,24 +59,41 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         android
         log)
 
-# Compiler flags for better compatibility and warnings
+# FIXED: Enhanced compiler flags for better compatibility and 16KB alignment
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wall
         -Wextra
         -Wno-unused-parameter
         -Wno-unused-function
-        -std=c++11)
+        -std=c++11
+        # Add optimization flags that respect alignment
+        $<$<CONFIG:Release>:-O2 -ffunction-sections -fdata-sections>
+        $<$<CONFIG:Debug>:-g -O0>)
+
+# FIXED: Target-specific linker flags for 16KB alignment
+if(ANDROID)
+    target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+            # 16KB page alignment flags
+            -Wl,-z,max-page-size=16384
+            -Wl,-z,common-page-size=16384
+            # Additional optimization for release builds
+            $<$<CONFIG:Release>:-Wl,--gc-sections>
+            $<$<CONFIG:Release>:-Wl,--strip-all>)
+endif()
 
 # Define preprocessor macros if needed
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-        ANDROID_PLATFORM)
+        ANDROID_PLATFORM
+        # Add 16KB page awareness
+        ANDROID_16KB_PAGES=1)
 
+# REMOVED: Redundant optimization flags (now handled in target_compile_options)
 # Optional: Enable optimization for release builds
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -O2)
-endif()
+# if(CMAKE_BUILD_TYPE STREQUAL "Release")
+#     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -O2)
+# endif()
 
 # Optional: Add debug symbols for debug builds
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g)
-endif()
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -g)
+# endif()
