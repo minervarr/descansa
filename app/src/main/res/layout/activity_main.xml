@@ -16,7 +16,7 @@
         android:clipToPadding="false"
         android:fitsSystemWindows="true">
 
-        <!-- Header Section - Clean, No Overlap -->
+        <!-- Header Section - Fixed Touch Target -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,21 +34,23 @@
                 android:textStyle="bold"
                 android:textColor="?android:attr/textColorPrimary" />
 
+            <!-- FIXED: Minimum 48dp touch target -->
             <Button
                 android:id="@+id/settings_button"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="48dp"
                 android:text="@string/btn_settings_short"
                 android:textSize="12sp"
-                android:minWidth="64dp"
-                android:minHeight="0dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
+                android:minWidth="88dp"
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:contentDescription="@string/desc_settings_button"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>
 
-        <!-- Status Section - Clean -->
+        <!-- Status Section - Enhanced Accessibility -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,17 +83,30 @@
 
         </LinearLayout>
 
-        <!-- Main Action Button -->
-        <Button
-            android:id="@+id/sleep_button"
+        <!-- FIXED: Main Action Button - Constrained Width -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="@string/btn_start_sleep"
-            android:textSize="16sp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            style="@style/Widget.MaterialComponents.Button" />
+            android:gravity="center">
 
-        <!-- Sleep Information Grid - Well Spaced -->
+            <Button
+                android:id="@+id/sleep_button"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:text="@string/btn_start_sleep"
+                android:textSize="16sp"
+                android:minHeight="48dp"
+                android:minWidth="200dp"
+                android:maxWidth="280dp"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:contentDescription="@string/desc_sleep_button"
+                style="@style/Widget.MaterialComponents.Button" />
+
+        </LinearLayout>
+
+        <!-- Sleep Information Grid - Accessibility Enhanced -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -116,7 +131,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="8dp"
-                android:paddingVertical="4dp">
+                android:paddingVertical="4dp"
+                android:minHeight="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -143,7 +160,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="8dp"
-                android:paddingVertical="4dp">
+                android:paddingVertical="4dp"
+                android:minHeight="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -170,7 +189,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="8dp"
-                android:paddingVertical="4dp">
+                android:paddingVertical="4dp"
+                android:minHeight="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -196,7 +217,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingVertical="4dp">
+                android:paddingVertical="4dp"
+                android:minHeight="48dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
@@ -219,37 +242,50 @@
 
         </LinearLayout>
 
-        <!-- Action Buttons - Well Spaced -->
+        <!-- FIXED: Action Buttons - Optimal Width Constraints -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <Button
                 android:id="@+id/export_button"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/btn_export_short"
                 android:textSize="13sp"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="12dp"
+                android:minHeight="48dp"
+                android:minWidth="100dp"
+                android:maxWidth="140dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:contentDescription="@string/desc_export_button"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
             <Button
                 android:id="@+id/clear_data_button"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/btn_clear_short"
                 android:textSize="13sp"
-                android:layout_marginStart="6dp"
-                android:textColor="?android:attr/colorError"
+                android:layout_marginStart="12dp"
+                android:minHeight="48dp"
+                android:minWidth="100dp"
+                android:maxWidth="140dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="@color/button_clear_text_color"
+                android:contentDescription="@string/desc_clear_button"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>
 
-        <!-- Debug Section - Minimal, Bottom Safe -->
+        <!-- Debug Section - Accessibility Compliant -->
         <TextView
             android:id="@+id/debug_text"
             android:layout_width="match_parent"
@@ -259,9 +295,10 @@
             android:textStyle="italic"
             android:gravity="center"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="16dp"
-            android:paddingBottom="8dp"
+            android:layout_marginBottom="24dp"
+            android:paddingBottom="16dp"
             android:textColor="?android:attr/textColorTertiary"
+            android:minHeight="32dp"
             tools:visibility="visible" />
 
     </LinearLayout>
