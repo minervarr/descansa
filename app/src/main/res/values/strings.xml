@@ -58,7 +58,7 @@
     <!-- Success Messages -->
     <string name="msg_sleep_started">Sleep session started</string>
     <string name="msg_sleep_ended">Sleep session ended</string>
-    <string name="msg_data_exported">Exported: %s</string>
+    <string name="msg_data_exported">Exported: %1$s</string>
     <string name="msg_data_cleared">Data cleared</string>
     <string name="msg_settings_saved">Settings saved</string>
 

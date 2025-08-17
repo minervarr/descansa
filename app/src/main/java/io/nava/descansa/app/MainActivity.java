@@ -3,7 +3,6 @@ package io.nava.descansa.app;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import android.os.Bundle;
 import android.os.Environment;
@@ -224,27 +223,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleExportData() {
         try {
+            // Export to Documents directory
             File documentsDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOCUMENTS);
-            if (documentsDir != null) {
-                documentsDir.mkdirs();
+            documentsDir.mkdirs();
 
-                String timestamp = String.valueOf(System.currentTimeMillis());
-                String filename = getString(R.string.export_filename_template, timestamp);
-                File exportFile = new File(documentsDir, filename);
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String filename = "descansa_analysis_data_" + timestamp + ".csv";
+            File exportFile = new File(documentsDir, filename);
 
-                boolean success = exportData(exportFile.getAbsolutePath());
-                if (success) {
-                    showToast(getString(R.string.msg_data_exported, filename));
-                } else {
-                    showToast(getString(R.string.error_export_failed));
-                }
+            // Use the new analysis-oriented export
+            boolean success = exportAnalysisCsv(exportFile.getAbsolutePath());
+
+            if (success) {
+                String message = getString(R.string.msg_data_exported, filename);
+                showToast(message);
             } else {
                 showToast(getString(R.string.error_export_failed));
             }
         } catch (Exception e) {
-            String errorMsg = getString(R.string.error_export_error, e.getMessage());
-            showToast(errorMsg);
+            showToast(getString(R.string.error_export_failed) + ": " + e.getMessage());
         }
     }
 
@@ -444,7 +442,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Data management
     public native boolean saveData();
-    public native boolean exportData(String exportPath);
+    public native boolean exportAnalysisCsv(String exportPath);
+
     public native void clearHistory();
 
     static {

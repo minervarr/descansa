@@ -172,15 +172,6 @@ Java_io_nava_descansa_app_MainActivity_getAverageSleepDurationFormatted(
 }
 
 // Formatted current session duration - NOW PROPERLY IMPLEMENTED
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(
-        JNIEnv* env, jobject /* this */) {
-    ensure_core_initialized();
-
-    auto duration = g_core->get_current_session_duration();
-    std::string formatted = descansa::utils::format_duration(duration);
-    return env->NewStringUTF(formatted.c_str());
-}
 
 // Sleep period detection
 JNIEXPORT jboolean JNICALL
@@ -232,6 +223,29 @@ Java_io_nava_descansa_app_MainActivity_getCurrentWakeMinute(
     ensure_core_initialized();
     const auto& config = g_core->get_config();
     return static_cast<jint>(config.target_wake_minute.count());
+}
+
+// Analysis-oriented CSV export
+JNIEXPORT jboolean JNICALL
+Java_io_nava_descansa_app_MainActivity_exportAnalysisCsv(
+        JNIEnv* env, jobject /* this */, jstring export_path) {
+    ensure_core_initialized();
+
+    const char* path_chars = env->GetStringUTFChars(export_path, nullptr);
+    std::string path(path_chars);
+    env->ReleaseStringUTFChars(export_path, path_chars);
+
+    return g_core->export_analysis_csv(path);
+}
+
+// Add current session duration support
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    auto duration = g_core->get_current_session_duration();
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
 }
 
 } // extern "C"

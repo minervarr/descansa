@@ -14,31 +14,54 @@ namespace descansa {
     using TimePoint = std::chrono::system_clock::time_point;
     using Duration = std::chrono::duration<double>;
 
-// Sleep session data structure
-    struct SleepSession {
-        TimePoint sleep_start;
-        TimePoint wake_up;
-        Duration sleep_duration;
-        bool is_complete;
+// Forward declaration
+    struct ScheduleConfig;
 
-        SleepSession() : sleep_duration(0), is_complete(false) {}
-
-        explicit SleepSession(TimePoint start, TimePoint end)
-                : sleep_start(start), wake_up(end), is_complete(true) {
-            sleep_duration = std::chrono::duration_cast<Duration>(end - start);
-        }
-    };
-
-// Daily schedule configuration
+// Daily schedule configuration - MOVED BEFORE SleepSession
     struct ScheduleConfig {
         Duration target_sleep_hours;
         std::chrono::hours target_wake_hour;  // Hour of day (0-23)
         std::chrono::minutes target_wake_minute; // Minute of hour (0-59)
 
         ScheduleConfig()
-                : target_sleep_hours(8.0),
+                : target_sleep_hours(Duration(8.0 * 3600.0)),  // Fix: explicit Duration constructor
                   target_wake_hour(8),
                   target_wake_minute(0) {}
+    };
+
+// Modified SleepSession struct for complete data retention
+    struct SleepSession {
+        // Core sleep data
+        TimePoint sleep_start;
+        TimePoint wake_up;
+        Duration sleep_duration;
+        bool is_complete;
+
+        // Configuration context (what settings were active during this session)
+        Duration target_sleep_hours_at_session;
+        std::chrono::hours target_wake_hour_at_session;
+        std::chrono::minutes target_wake_minute_at_session;
+
+        // Session metadata
+        TimePoint session_recorded;
+
+        // Default constructor - Fix initialization
+        SleepSession() : sleep_duration(0), is_complete(false),
+                         target_sleep_hours_at_session(Duration(8.0 * 3600)),
+                         target_wake_hour_at_session(std::chrono::hours(8)),
+                         target_wake_minute_at_session(std::chrono::minutes(0)) {
+            session_recorded = std::chrono::system_clock::now();
+        }
+
+        // Constructor with configuration context
+        SleepSession(TimePoint start, TimePoint end, const ScheduleConfig& active_config)
+                : sleep_start(start), wake_up(end), is_complete(true),
+                  target_sleep_hours_at_session(active_config.target_sleep_hours),
+                  target_wake_hour_at_session(active_config.target_wake_hour),
+                  target_wake_minute_at_session(active_config.target_wake_minute) {
+            sleep_duration = std::chrono::duration_cast<Duration>(end - start);
+            session_recorded = std::chrono::system_clock::now();
+        }
     };
 
 // Core sleep tracking and calculation engine
@@ -82,6 +105,7 @@ namespace descansa {
         bool save_data() const;
         bool load_data();
         bool export_data(const std::string& export_path) const;
+        bool export_analysis_csv(const std::string& export_path) const;
         void clear_history();
 
         // Statistics
