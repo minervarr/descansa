@@ -66,15 +66,14 @@ public class MainActivity extends AppCompatActivity {
         // FIXED: Enable edge-to-edge display
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        // FIXED: Configure system bars
+        // FIXED: Simplified null check - WindowCompat.getInsetsController never returns null
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
 
-        if (windowInsetsController != null) {
-            // Make status bar and navigation bar content dark/light based on theme
-            windowInsetsController.setAppearanceLightStatusBars(true);
-            windowInsetsController.setAppearanceLightNavigationBars(true);
-        }
+        // FIXED: Removed redundant null check since WindowCompat.getInsetsController() never returns null
+        // Make status bar and navigation bar content dark/light based on theme
+        windowInsetsController.setAppearanceLightStatusBars(true);
+        windowInsetsController.setAppearanceLightNavigationBars(true);
 
         // FIXED: Ensure no ActionBar is created
         if (getSupportActionBar() != null) {
@@ -226,7 +225,12 @@ public class MainActivity extends AppCompatActivity {
             // Export to Documents directory
             File documentsDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOCUMENTS);
-            documentsDir.mkdirs();
+
+            // FIXED: Check result of mkdirs() and handle potential failure
+            if (!documentsDir.exists() && !documentsDir.mkdirs()) {
+                showToast(getString(R.string.error_export_failed) + ": Cannot create directory");
+                return;
+            }
 
             String timestamp = String.valueOf(System.currentTimeMillis());
             String filename = "descansa_analysis_data_" + timestamp + ".csv";
@@ -250,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.dialog_clear_title))
                 .setMessage(getString(R.string.dialog_clear_message))
+                // FIXED: Simplified lambda - converted statement lambda to expression lambda
                 .setPositiveButton(getString(R.string.btn_clear), (dialog, which) -> {
                     clearHistory();
                     showToast(getString(R.string.msg_data_cleared));
@@ -322,9 +327,8 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(timeLayout);
         builder.setView(layout);
 
-        builder.setPositiveButton(getString(R.string.btn_save), (dialog, which) -> {
-            saveSettings(sleepInput, hourInput, minuteInput);
-        });
+        builder.setPositiveButton(getString(R.string.btn_save), (dialog, which) ->
+                saveSettings(sleepInput, hourInput, minuteInput));
 
         builder.setNegativeButton(getString(R.string.btn_cancel), null);
         builder.show();
@@ -443,7 +447,6 @@ public class MainActivity extends AppCompatActivity {
     // Data management
     public native boolean saveData();
     public native boolean exportAnalysisCsv(String exportPath);
-
     public native void clearHistory();
 
     static {

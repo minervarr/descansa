@@ -207,137 +207,16 @@ namespace descansa {
         return true;
     }
 
-    bool DescansaCore::export_data(const std::string& export_path) const {
-        std::ofstream file(export_path);
-        if (!file.is_open()) return false;
-
-        file << "Descansa Sleep Data Export\n";
-        file << "Generated: " << utils::format_time(utils::now()) << "\n\n";
-
-        file << "Configuration:\n";
-        file << "Target Sleep Hours: " << utils::format_duration(config.target_sleep_hours) << "\n";
-        file << "Target Wake Time: " << config.target_wake_hour.count()
-             << ":" << std::setfill('0') << std::setw(2) << config.target_wake_minute.count() << "\n\n";
-
-        file << "Sleep History:\n";
-        file << "Date,Sleep Start,Wake Up,Duration (hours)\n";
-
-        for (const auto& session : sleep_history) {
-            if (session.is_complete) {
-                file << utils::format_time(session.sleep_start) << ","
-                     << utils::format_time(session.sleep_start) << ","
-                     << utils::format_time(session.wake_up) << ","
-                     << (session.sleep_duration.count() / 3600.0) << "\n";
-            }
-        }
-
-        return file.good();
-    }
-
     void DescansaCore::clear_history() {
         sleep_history.clear();
         save_data();
     }
 
-    std::vector<SleepSession> DescansaCore::get_recent_sessions(int count) const {
-        if (static_cast<int>(sleep_history.size()) <= count) {
-            return sleep_history;
-        }
-
-        return {sleep_history.end() - count, sleep_history.end()};
-    }
-
-    std::string DescansaCore::get_status_summary() const {
-        std::ostringstream ss;
-
-        if (session_active) {
-            Duration elapsed = std::chrono::duration_cast<Duration>(
-                    utils::now() - current_session_start);
-            ss << "Sleeping for: " << utils::format_duration(elapsed) << "\n";
-        } else {
-            Duration last_sleep = get_last_sleep_duration();
-            Duration remaining_work = get_remaining_work_time();
-
-            ss << "Last sleep: " << utils::format_duration(last_sleep) << "\n";
-            ss << "Work time remaining: " << utils::format_duration(remaining_work) << "\n";
-            ss << "Next bedtime: " << utils::format_time(get_next_recommended_bedtime()) << "\n";
-        }
-
-        return ss.str();
-    }
-
-    bool DescansaCore::has_slept_today() const {
-        if (sleep_history.empty()) return false;
-
-        TimePoint today_start = utils::start_of_day(utils::now());
-        const auto& last_session = sleep_history.back();
-
-        return last_session.wake_up >= today_start;
-    }
-
-    Duration DescansaCore::get_time_since_last_wake() const {
-        if (sleep_history.empty() || session_active) {
-            return Duration(0);
-        }
-
-        return std::chrono::duration_cast<Duration>(
-                utils::now() - sleep_history.back().wake_up);
-    }
-
-// Utility functions implementation
-    namespace utils {
-
-        std::string format_duration(const Duration& d) {
-            int hours = static_cast<int>(d.count() / 3600);
-            int minutes = static_cast<int>((d.count() - hours * 3600) / 60);
-
-            std::ostringstream ss;
-            ss << hours << "h " << minutes << "m";
-            return ss.str();
-        }
-
-        std::string format_time(const TimePoint& tp) {
-            auto time_t = std::chrono::system_clock::to_time_t(tp);
-            auto tm = *std::localtime(&time_t);
-
-            std::ostringstream ss;
-            ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-            return ss.str();
-        }
-
-        TimePoint now() {
-            return std::chrono::system_clock::now();
-        }
-
-        bool is_same_day(const TimePoint& t1, const TimePoint& t2) {
-            auto time1 = std::chrono::system_clock::to_time_t(t1);
-            auto time2 = std::chrono::system_clock::to_time_t(t2);
-
-            auto tm1 = *std::localtime(&time1);
-            auto tm2 = *std::localtime(&time2);
-
-            return (tm1.tm_year == tm2.tm_year &&
-                    tm1.tm_yday == tm2.tm_yday);
-        }
-
-        TimePoint start_of_day(const TimePoint& tp) {
-            auto time_t = std::chrono::system_clock::to_time_t(tp);
-            auto tm = *std::localtime(&time_t);
-
-            tm.tm_hour = 0;
-            tm.tm_min = 0;
-            tm.tm_sec = 0;
-
-            return std::chrono::system_clock::from_time_t(std::mktime(&tm));
-        }
-
-        TimePoint end_of_day(const TimePoint& tp) {
-            return start_of_day(tp) + std::chrono::hours(24) - std::chrono::seconds(1);
-        }
-
-    } // namespace utils
-
-    // Add these implementations to DescansaCore.cpp:
+    // REMOVED UNUSED FUNCTIONS:
+    // - get_recent_sessions() - Never called anywhere
+    // - has_slept_today() - Never called anywhere
+    // - get_time_since_last_wake() - Never called anywhere
+    // - get_status_summary() - Not used in MainActivity
 
     bool DescansaCore::is_in_sleep_period() const {
         TimePoint now = utils::now();
@@ -420,5 +299,47 @@ namespace descansa {
 
         return file.good();
     }
+
+// Utility functions implementation - ONLY keeping functions that are actually used
+    namespace utils {
+
+        std::string format_duration(const Duration& d) {
+            int hours = static_cast<int>(d.count() / 3600);
+            int minutes = static_cast<int>((d.count() - hours * 3600) / 60);
+
+            std::ostringstream ss;
+            ss << hours << "h " << minutes << "m";
+            return ss.str();
+        }
+
+        std::string format_time(const TimePoint& tp) {
+            auto time_t = std::chrono::system_clock::to_time_t(tp);
+            auto tm = *std::localtime(&time_t);
+
+            std::ostringstream ss;
+            ss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+            return ss.str();
+        }
+
+        TimePoint now() {
+            return std::chrono::system_clock::now();
+        }
+
+        TimePoint start_of_day(const TimePoint& tp) {
+            auto time_t = std::chrono::system_clock::to_time_t(tp);
+            auto tm = *std::localtime(&time_t);
+
+            tm.tm_hour = 0;
+            tm.tm_min = 0;
+            tm.tm_sec = 0;
+
+            return std::chrono::system_clock::from_time_t(std::mktime(&tm));
+        }
+
+        // REMOVED UNUSED UTILITY FUNCTIONS:
+        // - is_same_day() - Not used in current implementation
+        // - end_of_day() - Not used in current implementation
+
+    } // namespace utils
 
 } // namespace descansa
