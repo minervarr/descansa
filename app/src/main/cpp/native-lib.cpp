@@ -132,21 +132,6 @@ Java_io_nava_descansa_app_MainActivity_getSessionCount(
     return static_cast<jint>(g_core->get_session_count());
 }
 
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_hasSleptToday(
-        JNIEnv* env, jobject /* this */) {
-    ensure_core_initialized();
-    return g_core->has_slept_today();
-}
-
-JNIEXPORT jdouble JNICALL
-Java_io_nava_descansa_app_MainActivity_getTimeSinceLastWakeHours(
-        JNIEnv* env, jobject /* this */) {
-    ensure_core_initialized();
-    auto duration = g_core->get_time_since_last_wake();
-    return duration.count() / 3600.0; // Convert to hours
-}
-
 // Utility functions for formatted strings
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_formatDuration(
@@ -155,59 +140,6 @@ Java_io_nava_descansa_app_MainActivity_formatDuration(
     std::string formatted = descansa::utils::format_duration(d);
     return env->NewStringUTF(formatted.c_str());
 }
-
-// Legacy function for initial testing
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_stringFromJNI(
-        JNIEnv* env, jobject /* this */) {
-    ensure_core_initialized();
-
-    std::string hello = "Descansa Core Ready!\n";
-    hello += "Sessions: " + std::to_string(g_core->get_session_count()) + "\n";
-    hello += g_core->get_status_summary();
-
-    return env->NewStringUTF(hello.c_str());
-}
-
-// Get current session duration in hours (for active sessions)
-JNIEXPORT jdouble JNICALL
-Java_io_nava_descansa_app_MainActivity_getCurrentSessionHours(
-        JNIEnv* env, jobject /* this */) {
-    ensure_core_initialized();
-
-    if (!g_core->is_session_running()) {
-        return 0.0; // No active session
-    }
-
-    // Calculate time since session started
-    // This requires access to session start time, which isn't exposed in current DescansaCore
-    // For now, return a simple calculation based on status
-
-    // Since we don't have direct access to session start time in the current API,
-    // we'll need to modify DescansaCore to expose this information
-    // For immediate implementation, return 0 and handle in Java layer
-    return 0.0;
-}
-
-// Alternative: Get a detailed status string that includes current session info
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getDetailedStatus(
-        JNIEnv* env, jobject /* this */) {
-    ensure_core_initialized();
-
-    std::string detailed_status;
-
-    if (g_core->is_session_running()) {
-        detailed_status = "Sleep session active\n";
-        detailed_status += "Duration: Calculating...\n";
-    } else {
-        detailed_status = g_core->get_status_summary();
-    }
-
-    return env->NewStringUTF(detailed_status.c_str());
-}
-
-// Add these new formatted methods after your existing JNI methods:
 
 // Formatted remaining work time
 JNIEXPORT jstring JNICALL
@@ -239,20 +171,15 @@ Java_io_nava_descansa_app_MainActivity_getAverageSleepDurationFormatted(
     return env->NewStringUTF(formatted.c_str());
 }
 
-// Formatted current session duration (for active sessions)
+// Formatted current session duration - NOW PROPERLY IMPLEMENTED
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(
         JNIEnv* env, jobject /* this */) {
     ensure_core_initialized();
 
-    if (!g_core->is_session_running()) {
-        return env->NewStringUTF("0h 0m");
-    }
-
-    // Calculate elapsed time since session start
-    // Note: This requires access to session start time
-    // For now, we'll return a placeholder until we enhance DescansaCore
-    return env->NewStringUTF("Session active");
+    auto duration = g_core->get_current_session_duration();
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
 }
 
 // Sleep period detection
@@ -278,6 +205,33 @@ Java_io_nava_descansa_app_MainActivity_getTimeUntilWakeFormatted(
     auto duration = g_core->get_time_until_target_wake();
     std::string formatted = descansa::utils::format_duration(duration);
     return env->NewStringUTF(formatted.c_str());
+}
+
+// Get current target sleep hours
+JNIEXPORT jdouble JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentTargetSleepHours(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    const auto& config = g_core->get_config();
+    return config.target_sleep_hours.count() / 3600.0; // Convert to hours
+}
+
+// Get current wake hour
+JNIEXPORT jint JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentWakeHour(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    const auto& config = g_core->get_config();
+    return static_cast<jint>(config.target_wake_hour.count());
+}
+
+// Get current wake minute
+JNIEXPORT jint JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentWakeMinute(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    const auto& config = g_core->get_config();
+    return static_cast<jint>(config.target_wake_minute.count());
 }
 
 } // extern "C"

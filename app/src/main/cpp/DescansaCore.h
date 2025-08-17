@@ -75,6 +75,9 @@ namespace descansa {
         Duration get_average_sleep_duration(int days = 7) const;
         TimePoint get_next_recommended_bedtime() const;
 
+        // Current session tracking
+        Duration get_current_session_duration() const;
+
         // Data management
         bool save_data() const;
         bool load_data();

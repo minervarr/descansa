@@ -344,4 +344,11 @@ namespace descansa {
         return std::chrono::duration_cast<Duration>(today_wake - now);
     }
 
+    Duration DescansaCore::get_current_session_duration() const {
+        if (!session_active) {
+            return Duration(0);
+        }
+        return std::chrono::duration_cast<Duration>(utils::now() - current_session_start);
+    }
+
 } // namespace descansa

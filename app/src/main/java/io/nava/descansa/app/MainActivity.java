@@ -2,12 +2,16 @@ package io.nava.descansa.app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout;
 import android.os.Handler;
 import android.os.Looper;
 import java.io.File;
@@ -21,273 +25,347 @@ public class MainActivity extends AppCompatActivity {
     private Runnable updateRunnable;
     private boolean isUpdating = false;
 
-    // UI Elements
+    // UI Elements - Organized by section
     private TextView statusText;
+    private TextView currentSessionText;
+    private Button sleepButton;
+
+    // Sleep Information Grid
     private TextView workTimeText;
     private TextView lastSleepText;
     private TextView averageSleepText;
     private TextView sessionCountText;
-    private TextView currentSessionText;
-    private Button sleepButton;
+
+    // Action Buttons
     private Button exportButton;
     private Button settingsButton;
     private Button clearDataButton;
-    public native String getRemainingWorkTimeFormatted();
-    public native String getLastSleepDurationFormatted();
-    public native String getAverageSleepDurationFormatted(int days);
-    public native String getCurrentSessionDurationFormatted();
-    public native boolean isInSleepPeriod();
-    public native boolean isBeforeTargetWakeTime();
-    public native String getTimeUntilWakeFormatted();
+
+    // Debug
+    private TextView debugText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // FIXED: Configure system UI properly BEFORE setContentView
+        setupSystemUI();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize C++ core with app's data directory
-        String dataPath = getFilesDir().getAbsolutePath() + "/descansa_data.txt";
-        initializeCore(dataPath);
-
-        // Initialize UI elements
+        initializeCore();
         initializeUI();
-
-        // Set up button listeners
         setupButtonListeners();
-
-        // Start periodic UI updates
         startPeriodicUpdates();
-
-        // Initial UI update
         updateUI();
     }
 
+    // ========== SYSTEM UI CONFIGURATION ==========
+
+    private void setupSystemUI() {
+        // FIXED: Enable edge-to-edge display
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        // FIXED: Configure system bars
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+
+        if (windowInsetsController != null) {
+            // Make status bar and navigation bar content dark/light based on theme
+            windowInsetsController.setAppearanceLightStatusBars(true);
+            windowInsetsController.setAppearanceLightNavigationBars(true);
+        }
+
+        // FIXED: Ensure no ActionBar is created
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+    }
+
+    // ========== INITIALIZATION ==========
+
+    private void initializeCore() {
+        String dataPath = getFilesDir().getAbsolutePath() + "/descansa_data.txt";
+        initializeCore(dataPath);
+    }
+
     private void initializeUI() {
-        // Get references to UI elements from the binding
+        // Status section
         statusText = binding.statusText;
+        currentSessionText = binding.currentSessionText;
+        sleepButton = binding.sleepButton;
+
+        // Information grid
         workTimeText = binding.workTimeText;
         lastSleepText = binding.lastSleepText;
         averageSleepText = binding.averageSleepText;
         sessionCountText = binding.sessionCountText;
-        currentSessionText = binding.currentSessionText;
-        sleepButton = binding.sleepButton;
+
+        // Action buttons
         exportButton = binding.exportButton;
         settingsButton = binding.settingsButton;
         clearDataButton = binding.clearDataButton;
+
+        // Debug
+        debugText = binding.debugText;
     }
 
     private void setupButtonListeners() {
-        // Sleep/Wake button
-        sleepButton.setOnClickListener(v -> {
-            if (isSessionRunning()) {
-                endSleepSession();
-                showToast(getString(R.string.msg_sleep_ended));
-            } else {
-                startSleepSession();
-                showToast(getString(R.string.msg_sleep_started));
-            }
-            updateUI();
-        });
-
-        // Export data button
-        exportButton.setOnClickListener(v -> exportData());
-
-        // Settings button
+        sleepButton.setOnClickListener(v -> handleSleepButtonClick());
+        exportButton.setOnClickListener(v -> handleExportData());
         settingsButton.setOnClickListener(v -> showSettingsDialog());
-
-        // Clear data button (for debugging)
-        clearDataButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.btn_clear_data))
-                    .setMessage("This will delete all sleep session data. Continue?")
-                    .setPositiveButton("Clear", (dialog, which) -> {
-                        clearHistory();
-                        showToast(getString(R.string.msg_data_cleared));
-                        updateUI();
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        });
+        clearDataButton.setOnClickListener(v -> handleClearData());
     }
+
+    // ========== UI UPDATE LOGIC ==========
 
     private void updateUI() {
-        // Update status based on current state
+        updateStatusSection();
+        updateInformationGrid();
+        updateDebugInfo();
+    }
+
+    private void updateStatusSection() {
         if (isSessionRunning()) {
-            // Currently sleeping - active session
-            statusText.setText(getString(R.string.status_sleeping));
-            sleepButton.setText(getString(R.string.btn_end_sleep));
-
-            // Show current session duration using formatted method
-            String currentDuration = getCurrentSessionDurationFormatted();
-            currentSessionText.setText(getString(R.string.format_wake_up_in,
-                    getString(R.string.label_current_session), currentDuration));
-            currentSessionText.setVisibility(TextView.VISIBLE);
-
-            // Show sleeping status for work time
-            workTimeText.setText(getString(R.string.work_time_sleeping));
-
+            updateSleepingStatus();
         } else if (isInSleepPeriod() && isBeforeTargetWakeTime()) {
-            // Should be sleeping AND wake time hasn't passed yet
-            statusText.setText(getString(R.string.status_should_be_sleeping));
-            sleepButton.setText(getString(R.string.btn_start_sleep));
-
-            // Show time until wake up
-            String timeUntilWake = getTimeUntilWakeFormatted();
-            currentSessionText.setText(getString(R.string.format_wake_up_in,
-                    getString(R.string.label_wake_up_in), timeUntilWake));
-            currentSessionText.setVisibility(TextView.VISIBLE);
-
-            // Show total work time available today
-            String workTimeToday = getRemainingWorkTimeFormatted();
-            workTimeText.setText(getString(R.string.format_work_time_today,
-                    getString(R.string.label_work_time_today), workTimeToday));
-
+            updateSleepOpportunityStatus();
         } else {
-            // Normal awake period (or wake time has passed)
-            statusText.setText(getString(R.string.status_awake));
-            sleepButton.setText(getString(R.string.btn_start_sleep));
-            currentSessionText.setVisibility(TextView.GONE); // Hide wake-up countdown
+            updateAwakeStatus();
+        }
+    }
 
-            // Show remaining work time
+    private void updateSleepingStatus() {
+        statusText.setText(getString(R.string.status_sleeping));
+        sleepButton.setText(getString(R.string.btn_end_sleep));
+
+        String duration = getCurrentSessionDurationFormatted();
+        String sessionText = getString(R.string.format_session_duration, duration);
+        currentSessionText.setText(sessionText);
+        currentSessionText.setVisibility(TextView.VISIBLE);
+
+        workTimeText.setText(getString(R.string.status_sleeping_msg));
+    }
+
+    private void updateSleepOpportunityStatus() {
+        statusText.setText(getString(R.string.status_sleep_window));
+        sleepButton.setText(getString(R.string.btn_start_sleep));
+
+        String availableTime = getTimeUntilWakeFormatted();
+        String availableText = getString(R.string.format_sleep_available, availableTime);
+        currentSessionText.setText(availableText);
+        currentSessionText.setVisibility(TextView.VISIBLE);
+
+        workTimeText.setText(availableTime);
+    }
+
+    private void updateAwakeStatus() {
+        if (isInSleepPeriod()) {
+            statusText.setText(getString(R.string.status_good_morning));
+            workTimeText.setText(getString(R.string.status_wake_passed));
+        } else {
+            statusText.setText(getString(R.string.status_awake));
             String workTime = getRemainingWorkTimeFormatted();
-            if (!workTime.equals("0h 0m")) {
-                workTimeText.setText(getString(R.string.format_work_time_today,
-                        getString(R.string.label_work_time_remaining), workTime));
+            if (workTime.equals(getString(R.string.default_zero_time))) {
+                workTimeText.setText(getString(R.string.status_past_bedtime));
             } else {
-                workTimeText.setText(getString(R.string.work_time_past_bedtime));
+                workTimeText.setText(workTime);
             }
         }
 
-        // Update sleep statistics using formatted methods
-        String lastSleep = getLastSleepDurationFormatted();
-        if (!lastSleep.equals("0h 0m")) {
-            lastSleepText.setText(getString(R.string.format_work_time_today,
-                    getString(R.string.label_last_sleep_duration), lastSleep));
-        } else {
-            lastSleepText.setText(getString(R.string.format_work_time_today,
-                    getString(R.string.label_last_sleep_duration),
-                    getString(R.string.default_no_data)));
-        }
-
-        String avgSleep = getAverageSleepDurationFormatted(7);
-        if (!avgSleep.equals("0h 0m")) {
-            averageSleepText.setText(getString(R.string.format_work_time_today,
-                    getString(R.string.label_average_sleep), avgSleep));
-        } else {
-            averageSleepText.setText(getString(R.string.format_work_time_today,
-                    getString(R.string.label_average_sleep),
-                    getString(R.string.default_no_data)));
-        }
-
-        int sessionCount = getSessionCount();
-        sessionCountText.setText(getString(R.string.format_work_time_today,
-                getString(R.string.label_session_count), String.valueOf(sessionCount)));
+        sleepButton.setText(getString(R.string.btn_start_sleep));
+        currentSessionText.setVisibility(TextView.GONE);
     }
 
-    private void exportData() {
+    private void updateInformationGrid() {
+        // Last Sleep
+        String lastSleep = getLastSleepDurationFormatted();
+        if (lastSleep.equals(getString(R.string.default_zero_time))) {
+            lastSleepText.setText(getString(R.string.default_no_data));
+        } else {
+            lastSleepText.setText(lastSleep);
+        }
+
+        // Average Sleep
+        String avgSleep = getAverageSleepDurationFormatted(7);
+        if (avgSleep.equals(getString(R.string.default_zero_time))) {
+            averageSleepText.setText(getString(R.string.default_no_data));
+        } else {
+            averageSleepText.setText(avgSleep);
+        }
+
+        // Session Count
+        sessionCountText.setText(String.valueOf(getSessionCount()));
+    }
+
+    private void updateDebugInfo() {
+        if (isSessionRunning()) {
+            debugText.setText(getString(R.string.debug_session_active));
+        } else {
+            int sessionCount = getSessionCount();
+            String debugText = getString(R.string.debug_core_status, sessionCount);
+            this.debugText.setText(debugText);
+        }
+    }
+
+    // ========== BUTTON HANDLERS ==========
+
+    private void handleSleepButtonClick() {
+        if (isSessionRunning()) {
+            endSleepSession();
+            showToast(getString(R.string.msg_sleep_ended));
+        } else {
+            startSleepSession();
+            showToast(getString(R.string.msg_sleep_started));
+        }
+        updateUI();
+    }
+
+    private void handleExportData() {
         try {
-            // Export to Documents directory
             File documentsDir = Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOCUMENTS);
-            documentsDir.mkdirs(); // Create if doesn't exist
+            if (documentsDir != null) {
+                documentsDir.mkdirs();
 
-            String timestamp = String.valueOf(System.currentTimeMillis());
-            String filename = "descansa_sleep_data_" + timestamp + ".csv";
-            File exportFile = new File(documentsDir, filename);
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                String filename = getString(R.string.export_filename_template, timestamp);
+                File exportFile = new File(documentsDir, filename);
 
-            boolean success = exportData(exportFile.getAbsolutePath());
-
-            if (success) {
-                showToast(getString(R.string.msg_data_exported) + "\n" + filename);
+                boolean success = exportData(exportFile.getAbsolutePath());
+                if (success) {
+                    showToast(getString(R.string.msg_data_exported, filename));
+                } else {
+                    showToast(getString(R.string.error_export_failed));
+                }
             } else {
                 showToast(getString(R.string.error_export_failed));
             }
         } catch (Exception e) {
-            showToast(getString(R.string.error_export_failed) + ": " + e.getMessage());
+            String errorMsg = getString(R.string.error_export_error, e.getMessage());
+            showToast(errorMsg);
         }
     }
 
+    private void handleClearData() {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.dialog_clear_title))
+                .setMessage(getString(R.string.dialog_clear_message))
+                .setPositiveButton(getString(R.string.btn_clear), (dialog, which) -> {
+                    clearHistory();
+                    showToast(getString(R.string.msg_data_cleared));
+                    updateUI();
+                })
+                .setNegativeButton(getString(R.string.btn_cancel), null)
+                .show();
+    }
+
+    // ========== SETTINGS DIALOG ==========
+
     private void showSettingsDialog() {
-        // Create a simple settings dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.btn_settings)); // Use string resource
+        builder.setTitle(getString(R.string.dialog_settings_title));
 
-        // Create input layout
-        android.widget.LinearLayout layout = new android.widget.LinearLayout(this);
-        layout.setOrientation(android.widget.LinearLayout.VERTICAL);
-        layout.setPadding(50, 50, 50, 50);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(40, 40, 40, 40);
 
-        // Target sleep hours input
+        // Get current settings
+        double currentSleepHours = getCurrentTargetSleepHours();
+        int currentWakeHour = getCurrentWakeHour();
+        int currentWakeMinute = getCurrentWakeMinute();
+
+        // Target sleep hours
         TextView sleepLabel = new TextView(this);
         sleepLabel.setText(getString(R.string.label_target_sleep_hours));
+        sleepLabel.setTextSize(14);
         layout.addView(sleepLabel);
 
         EditText sleepInput = new EditText(this);
         sleepInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER |
                 android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        sleepInput.setHint("8.0");
+        sleepInput.setText(String.valueOf(currentSleepHours));
+        sleepInput.setHint(getString(R.string.hint_sleep_hours));
         layout.addView(sleepInput);
 
-        // Wake hour input
-        TextView wakeHourLabel = new TextView(this);
-        wakeHourLabel.setText(getString(R.string.label_wake_hour));
-        layout.addView(wakeHourLabel);
+        // Wake time
+        TextView wakeLabel = new TextView(this);
+        wakeLabel.setText(getString(R.string.label_wake_time));
+        wakeLabel.setTextSize(14);
+        wakeLabel.setPadding(0, 20, 0, 8);
+        layout.addView(wakeLabel);
 
-        EditText wakeHourInput = new EditText(this);
-        wakeHourInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        wakeHourInput.setHint("7");
-        layout.addView(wakeHourInput);
+        LinearLayout timeLayout = new LinearLayout(this);
+        timeLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        // Wake minute input
-        TextView wakeMinuteLabel = new TextView(this);
-        wakeMinuteLabel.setText(getString(R.string.label_wake_minute));
-        layout.addView(wakeMinuteLabel);
+        EditText hourInput = new EditText(this);
+        hourInput.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        hourInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        hourInput.setText(String.valueOf(currentWakeHour));
+        hourInput.setHint(getString(R.string.hint_hour));
+        timeLayout.addView(hourInput);
 
-        EditText wakeMinuteInput = new EditText(this);
-        wakeMinuteInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        wakeMinuteInput.setHint("0");
-        layout.addView(wakeMinuteInput);
+        TextView colonLabel = new TextView(this);
+        colonLabel.setText(getString(R.string.label_time_separator));
+        colonLabel.setTextSize(18);
+        colonLabel.setPadding(16, 0, 16, 0);
+        timeLayout.addView(colonLabel);
 
+        EditText minuteInput = new EditText(this);
+        minuteInput.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        minuteInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        minuteInput.setText(String.valueOf(currentWakeMinute));
+        minuteInput.setHint(getString(R.string.hint_minute));
+        timeLayout.addView(minuteInput);
+
+        layout.addView(timeLayout);
         builder.setView(layout);
 
-        builder.setPositiveButton("Save", (dialog, which) -> {
-            try {
-                // Parse and set target sleep hours
-                String sleepText = sleepInput.getText().toString().trim();
-                if (!sleepText.isEmpty()) {
-                    double sleepHours = Double.parseDouble(sleepText);
-                    if (sleepHours > 0 && sleepHours <= 12) {
-                        setTargetSleepHours(sleepHours);
-                    }
-                }
-
-                // Parse and set wake time
-                String hourText = wakeHourInput.getText().toString().trim();
-                String minuteText = wakeMinuteInput.getText().toString().trim();
-
-                if (!hourText.isEmpty() && !minuteText.isEmpty()) {
-                    int hour = Integer.parseInt(hourText);
-                    int minute = Integer.parseInt(minuteText);
-
-                    if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
-                        setTargetWakeTime(hour, minute);
-                    }
-                }
-
-                saveData(); // Save settings
-                showToast(getString(R.string.msg_settings_saved));
-                updateUI();
-
-            } catch (NumberFormatException e) {
-                showToast(getString(R.string.error_invalid_time));
-            }
+        builder.setPositiveButton(getString(R.string.btn_save), (dialog, which) -> {
+            saveSettings(sleepInput, hourInput, minuteInput);
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getString(R.string.btn_cancel), null);
         builder.show();
     }
+
+    private void saveSettings(EditText sleepInput, EditText hourInput, EditText minuteInput) {
+        try {
+            // Parse and validate sleep hours
+            String sleepText = sleepInput.getText().toString().trim();
+            if (!sleepText.isEmpty()) {
+                double sleepHours = Double.parseDouble(sleepText);
+                if (sleepHours > 0 && sleepHours <= 12) {
+                    setTargetSleepHours(sleepHours);
+                }
+            }
+
+            // Parse and validate wake time
+            String hourText = hourInput.getText().toString().trim();
+            String minuteText = minuteInput.getText().toString().trim();
+
+            if (!hourText.isEmpty() && !minuteText.isEmpty()) {
+                int hour = Integer.parseInt(hourText);
+                int minute = Integer.parseInt(minuteText);
+
+                if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+                    setTargetWakeTime(hour, minute);
+                }
+            }
+
+            saveData(); // Ensure persistence
+            showToast(getString(R.string.msg_settings_saved));
+            updateUI();
+
+        } catch (NumberFormatException e) {
+            showToast(getString(R.string.error_invalid_time));
+        }
+    }
+
+    // ========== LIFECYCLE & UPDATES ==========
 
     private void startPeriodicUpdates() {
         updateHandler = new Handler(Looper.getMainLooper());
@@ -296,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (isUpdating) {
                     updateUI();
-                    updateHandler.postDelayed(this, 30000); // Update every 30 seconds
+                    updateHandler.postDelayed(this, 30000); // 30 seconds
                 }
             }
         };
@@ -315,12 +393,6 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private double getCurrentSessionHours() {
-        // This would need a new JNI method to get current session duration
-        // For now, return 0 - this is a placeholder for future implementation
-        return 0.0;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -333,34 +405,48 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        saveData(); // Save data when app goes to background
+        saveData();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopPeriodicUpdates();
-        saveData(); // Final save
+        saveData();
     }
 
-    // Native method declarations - all implemented in native-lib.cpp
+    // ========== NATIVE METHODS ==========
+
+    // Core functionality
     public native void initializeCore(String dataPath);
     public native void startSleepSession();
     public native void endSleepSession();
     public native boolean isSessionRunning();
-    public native double getLastSleepHours();
-    public native double getRemainingWorkHours();
-    public native double getAverageSleepHours(int days);
-    public native int getSessionCount();
+
+    // Settings
     public native void setTargetSleepHours(double hours);
     public native void setTargetWakeTime(int hour, int minute);
+    public native double getCurrentTargetSleepHours();
+    public native int getCurrentWakeHour();
+    public native int getCurrentWakeMinute();
+
+    // Data queries
+    public native String getRemainingWorkTimeFormatted();
+    public native String getLastSleepDurationFormatted();
+    public native String getAverageSleepDurationFormatted(int days);
+    public native String getCurrentSessionDurationFormatted();
+    public native int getSessionCount();
+
+    // Sleep period detection
+    public native boolean isInSleepPeriod();
+    public native boolean isBeforeTargetWakeTime();
+    public native String getTimeUntilWakeFormatted();
+
+    // Data management
     public native boolean saveData();
     public native boolean exportData(String exportPath);
     public native void clearHistory();
-    public native String getStatusSummary();
-    public native String formatDuration(double hours);
 
-    // Load the native library
     static {
         System.loadLibrary("descansa");
     }

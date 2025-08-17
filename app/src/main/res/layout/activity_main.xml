@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -11,151 +12,255 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:gravity="center_horizontal">
+        android:paddingTop="8dp"
+        android:clipToPadding="false"
+        android:fitsSystemWindows="true">
 
-        <!-- App Title -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"
-            android:textColor="?android:attr/textColorPrimary" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_subtitle"
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp"
-            android:textColor="?android:attr/textColorSecondary" />
-
-        <!-- Status Section -->
-        <TextView
-            android:id="@+id/status_text"
+        <!-- Header Section - Clean, No Overlap -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/status_ready"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:background="?android:attr/selectableItemBackground"
-            android:padding="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_marginBottom="16dp"
-            android:textColor="?android:attr/textColorPrimary" />
+            android:paddingTop="8dp">
 
-        <!-- Current Session Info (only visible when sleeping) -->
-        <TextView
-            android:id="@+id/current_session_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Current session: 0h 0m"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone"
-            android:textColor="?android:attr/textColorSecondary" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/app_name"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary" />
 
-        <!-- Main Action Button -->
-        <Button
-            android:id="@+id/sleep_button"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/btn_start_sleep"
-            android:textSize="16sp"
-            android:layout_marginBottom="24dp"
-            style="@style/Widget.MaterialComponents.Button" />
+            <Button
+                android:id="@+id/settings_button"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="@string/btn_settings_short"
+                android:textSize="12sp"
+                android:minWidth="64dp"
+                android:minHeight="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
 
-        <!-- Sleep Information Display -->
+        </LinearLayout>
+
+        <!-- Status Section - Clean -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="?android:attr/selectableItemBackground"
             android:padding="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
 
             <TextView
-                android:id="@+id/work_time_text"
+                android:id="@+id/status_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_work_time_remaining"
-                android:textSize="16sp"
-                android:layout_marginBottom="8dp"
+                android:text="@string/status_ready"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
                 android:textColor="?android:attr/textColorPrimary" />
 
             <TextView
-                android:id="@+id/last_sleep_text"
+                android:id="@+id/current_session_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_last_sleep_duration"
-                android:textSize="16sp"
-                android:layout_marginBottom="8dp"
-                android:textColor="?android:attr/textColorPrimary" />
-
-            <TextView
-                android:id="@+id/average_sleep_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_average_sleep"
-                android:textSize="16sp"
-                android:layout_marginBottom="8dp"
-                android:textColor="?android:attr/textColorPrimary" />
-
-            <TextView
-                android:id="@+id/session_count_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_session_count"
-                android:textSize="16sp"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:text="@string/default_empty"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                android:textColor="?android:attr/textColorSecondary" />
 
         </LinearLayout>
 
-        <!-- Action Buttons -->
+        <!-- Main Action Button -->
+        <Button
+            android:id="@+id/sleep_button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/btn_start_sleep"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            style="@style/Widget.MaterialComponents.Button" />
+
+        <!-- Sleep Information Grid - Well Spaced -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="16dp">
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="1dp">
 
-            <Button
-                android:id="@+id/settings_button"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_settings"
+                android:text="@string/section_sleep_info"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorSecondary"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Row 1: Work Time -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginBottom="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_work_time_short"
+                    android:textSize="15sp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/work_time_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no_data"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+            </LinearLayout>
+
+            <!-- Row 2: Last Sleep -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_last_sleep_short"
+                    android:textSize="15sp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/last_sleep_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no_data"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+            </LinearLayout>
+
+            <!-- Row 3: Average -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_average_short"
+                    android:textSize="15sp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/average_sleep_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no_data"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+            </LinearLayout>
+
+            <!-- Row 4: Sessions -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingVertical="4dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_sessions_short"
+                    android:textSize="15sp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/session_count_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_no_data"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Action Buttons - Well Spaced -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
 
             <Button
                 android:id="@+id/export_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_export_data"
-                android:layout_marginBottom="8dp"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="@string/btn_export_short"
+                android:textSize="13sp"
+                android:layout_marginEnd="6dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
             <Button
                 android:id="@+id/clear_data_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_clear_data"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:text="@string/btn_clear_short"
+                android:textSize="13sp"
+                android:layout_marginStart="6dp"
                 android:textColor="?android:attr/colorError"
                 style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>
 
-        <!-- Debug Information (for development) -->
+        <!-- Debug Section - Minimal, Bottom Safe -->
         <TextView
+            android:id="@+id/debug_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/debug_core_status"
-            android:textSize="12sp"
+            android:text="@string/debug_core_ready"
+            android:textSize="11sp"
             android:textStyle="italic"
             android:gravity="center"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:paddingBottom="8dp"
             android:textColor="?android:attr/textColorTertiary"
             tools:visibility="visible" />
 
