@@ -45,21 +45,25 @@ namespace descansa {
         // Session metadata
         TimePoint session_recorded;
 
-        // Default constructor - Fix initialization
-        SleepSession() : sleep_duration(0), is_complete(false),
-                         target_sleep_hours_at_session(Duration(8.0 * 3600)),
-                         target_wake_hour_at_session(std::chrono::hours(8)),
-                         target_wake_minute_at_session(std::chrono::minutes(0)) {
+        // FIXED: Default constructor - Initialize ALL fields including sleep_duration
+        SleepSession()
+                : sleep_duration(0.0),  // FIXED: Explicit initialization
+                  is_complete(false),
+                  target_sleep_hours_at_session(Duration(8.0 * 3600)),
+                  target_wake_hour_at_session(std::chrono::hours(8)),
+                  target_wake_minute_at_session(std::chrono::minutes(0)) {
             session_recorded = std::chrono::system_clock::now();
         }
 
         // Constructor with configuration context
         SleepSession(TimePoint start, TimePoint end, const ScheduleConfig& active_config)
-                : sleep_start(start), wake_up(end), is_complete(true),
+                : sleep_start(start),
+                  wake_up(end),
+                  sleep_duration(std::chrono::duration_cast<Duration>(end - start)),  // FIXED: Initialize here too
+                  is_complete(true),
                   target_sleep_hours_at_session(active_config.target_sleep_hours),
                   target_wake_hour_at_session(active_config.target_wake_hour),
                   target_wake_minute_at_session(active_config.target_wake_minute) {
-            sleep_duration = std::chrono::duration_cast<Duration>(end - start);
             session_recorded = std::chrono::system_clock::now();
         }
     };
@@ -104,32 +108,34 @@ namespace descansa {
         // Data management
         bool save_data() const;
         bool load_data();
-        bool export_data(const std::string& export_path) const;
-        bool export_analysis_csv(const std::string& export_path) const;
+        bool export_analysis_csv(const std::string& export_path) const;  // USED by MainActivity
         void clear_history();
 
         // Statistics
         size_t get_session_count() const { return sleep_history.size(); }
-        std::vector<SleepSession> get_recent_sessions(int count = 10) const;
 
-        // Current status
-        std::string get_status_summary() const;
-        bool has_slept_today() const;
-        Duration get_time_since_last_wake() const;
-
+        // Current status - USED by MainActivity
         bool is_in_sleep_period() const;
         bool is_before_target_wake_time() const;
         Duration get_time_until_target_wake() const;
+
+        // REMOVED UNUSED FUNCTIONS - These are never called in the codebase:
+        // - get_recent_sessions() - Not used anywhere
+        // - has_slept_today() - Not used anywhere
+        // - get_time_since_last_wake() - Not used anywhere
+        // - get_status_summary() - Not used in MainActivity
     };
 
-// Utility functions
+// Utility functions - ONLY keep functions that are actually used
     namespace utils {
-        std::string format_duration(const Duration& d);
-        std::string format_time(const TimePoint& tp);
-        TimePoint now();
-        bool is_same_day(const TimePoint& t1, const TimePoint& t2);
-        TimePoint start_of_day(const TimePoint& tp);
-        TimePoint end_of_day(const TimePoint& tp);
+        std::string format_duration(const Duration& d);      // USED - by formatted functions
+        std::string format_time(const TimePoint& tp);        // USED - by export functions
+        TimePoint now();                                      // USED - throughout core
+        TimePoint start_of_day(const TimePoint& tp);         // USED - by core calculations
+
+        // REMOVED UNUSED UTILITY FUNCTIONS:
+        // - is_same_day() - Not used anywhere in current implementation
+        // - end_of_day() - Not used anywhere in current implementation
     }
 
 } // namespace descansa
