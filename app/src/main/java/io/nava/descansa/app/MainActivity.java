@@ -13,6 +13,7 @@ import android.widget.Toast;
 import android.widget.LinearLayout;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import java.io.File;
 
 import io.nava.descansa.app.databinding.ActivityMainBinding;
@@ -159,10 +160,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateAwakeStatus() {
+        // Get reference to the work time label
+        TextView workTimeLabel = findViewById(R.id.work_time_label);
+
         if (isInSleepPeriod()) {
-            statusText.setText(getString(R.string.status_good_morning));
-            workTimeText.setText(getString(R.string.status_wake_passed));
+            // MAINTAIN two-column layout by splitting the format
+            String nextWakeTime = getNextWakeTimeFormatted();  // "05:10"
+            String timeUntilWake = getTimeUntilNextWakeFormatted(); // "7h 30m"
+
+            // Left side (normal font): "Time until 05:10:"
+            String leftText = "Time until " + nextWakeTime + ":";
+            workTimeLabel.setText(leftText);
+            workTimeLabel.setVisibility(View.VISIBLE);
+
+            // Right side (bold font): "7h 30m"
+            workTimeText.setText(timeUntilWake);
+
+            // Set status
+            if (isBeforeTargetWakeTime()) {
+                statusText.setText(getString(R.string.status_sleeping));
+            } else {
+                statusText.setText(getString(R.string.status_good_morning));
+            }
+
         } else {
+            // NORMAL two-column layout
+            // Left side (normal font): "Work Time:"
+            workTimeLabel.setText(getString(R.string.label_work_time_short));
+            workTimeLabel.setVisibility(View.VISIBLE);
+
+            // Right side (bold font): time value
             statusText.setText(getString(R.string.status_awake));
             String workTime = getRemainingWorkTimeFormatted();
             if (workTime.equals(getString(R.string.default_zero_time))) {
@@ -173,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         sleepButton.setText(getString(R.string.btn_start_sleep));
-        currentSessionText.setVisibility(TextView.GONE);
+        currentSessionText.setVisibility(View.GONE);
     }
 
     private void updateInformationGrid() {
@@ -438,6 +465,10 @@ public class MainActivity extends AppCompatActivity {
     public native String getAverageSleepDurationFormatted(int days);
     public native String getCurrentSessionDurationFormatted();
     public native int getSessionCount();
+
+    // Enhanced wake time methods
+    public native String getTimeUntilNextWakeFormatted();
+    public native String getNextWakeTimeFormatted();
 
     // Sleep period detection
     public native boolean isInSleepPeriod();

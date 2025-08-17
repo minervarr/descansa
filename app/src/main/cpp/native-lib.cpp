@@ -220,4 +220,23 @@ Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(
     return env->NewStringUTF(formatted.c_str());
 }
 
+// Formatted time until next wake (could be today or tomorrow)
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getTimeUntilNextWakeFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    auto duration = g_core->get_time_until_next_wake();
+    std::string formatted = descansa::utils::format_duration(duration);
+    return env->NewStringUTF(formatted.c_str());
+}
+
+// Formatted next wake time in 24-hour format (HH:MM)
+JNIEXPORT jstring JNICALL
+Java_io_nava_descansa_app_MainActivity_getNextWakeTimeFormatted(
+        JNIEnv* env, jobject /* this */) {
+    ensure_core_initialized();
+    std::string formatted = g_core->get_next_wake_time_formatted();
+    return env->NewStringUTF(formatted.c_str());
+}
+
 } // extern "C"

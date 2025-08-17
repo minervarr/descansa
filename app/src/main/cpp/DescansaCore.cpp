@@ -342,4 +342,44 @@ namespace descansa {
 
     } // namespace utils
 
+    Duration DescansaCore::get_time_until_next_wake() const {
+        TimePoint now = utils::now();
+        TimePoint today_wake = get_today_target_wake_time();
+
+        if (now < today_wake) {
+            // Today's wake time hasn't passed yet
+            return std::chrono::duration_cast<Duration>(today_wake - now);
+        } else {
+            // Today's wake time has passed, calculate time until tomorrow's wake
+            TimePoint tomorrow_wake = get_tomorrow_target_wake_time();
+            return std::chrono::duration_cast<Duration>(tomorrow_wake - now);
+        }
+    }
+
+    TimePoint DescansaCore::get_next_wake_time() const {
+        TimePoint now = utils::now();
+        TimePoint today_wake = get_today_target_wake_time();
+
+        if (now < today_wake) {
+            return today_wake;
+        } else {
+            return get_tomorrow_target_wake_time();
+        }
+    }
+
+    std::string DescansaCore::get_next_wake_time_formatted() const {
+        TimePoint next_wake = get_next_wake_time();
+        return format_wake_time_24h(next_wake);
+    }
+
+    std::string DescansaCore::format_wake_time_24h(const TimePoint& wake_time) const {
+        auto time_t = std::chrono::system_clock::to_time_t(wake_time);
+        auto tm = *std::localtime(&time_t);
+
+        std::ostringstream ss;
+        ss << std::setfill('0') << std::setw(2) << tm.tm_hour << ":"
+           << std::setfill('0') << std::setw(2) << tm.tm_min;
+        return ss.str();
+    }
+
 } // namespace descansa

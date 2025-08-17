@@ -119,6 +119,14 @@ namespace descansa {
         bool is_before_target_wake_time() const;
         Duration get_time_until_target_wake() const;
 
+        // Wake time calculations - Enhanced for next wake detection
+        Duration get_time_until_next_wake() const;
+        TimePoint get_next_wake_time() const;
+        std::string get_next_wake_time_formatted() const;
+
+        // Helper method for 24-hour time formatting
+        std::string format_wake_time_24h(const TimePoint& wake_time) const;
+
         // REMOVED UNUSED FUNCTIONS - These are never called in the codebase:
         // - get_recent_sessions() - Not used anywhere
         // - has_slept_today() - Not used anywhere
