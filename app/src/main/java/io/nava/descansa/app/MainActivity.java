@@ -222,7 +222,16 @@ public class MainActivity extends AppCompatActivity {
         TextView sleepLabel = new TextView(this);
         sleepLabel.setText("How many hours do you want to sleep?");
         sleepLabel.setTextSize(14);
+
+// FIXED: Resolve theme attribute
+        android.util.TypedValue typedValue = new android.util.TypedValue();
+        getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        sleepLabel.setTextColor(typedValue.data);
+
         layout.addView(sleepLabel);
+
+
+
 
         LinearLayout sleepTimeLayout = new LinearLayout(this);
         sleepTimeLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -269,7 +278,12 @@ public class MainActivity extends AppCompatActivity {
         wakeLabel.setText("What time do you want to wake up?");
         wakeLabel.setTextSize(14);
         wakeLabel.setPadding(0, 32, 0, 8);
-        wakeLabel.setTextColor(getResources().getColor(android.R.color.black));
+
+// FIXED: Same resolution for consistency
+        android.util.TypedValue typedValue2 = new android.util.TypedValue();
+        getTheme().resolveAttribute(android.R.attr.textColorPrimary, typedValue2, true);
+        wakeLabel.setTextColor(typedValue2.data);
+
         layout.addView(wakeLabel);
 
         LinearLayout wakeTimeLayout = new LinearLayout(this);
