@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void applyStoredTheme() {
-        String theme = getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
+        String themeId = getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
                 .getString("theme", "white");
 
-        switch (theme) {
+        switch (themeId) {
             case "white":
-                // Default light theme - no action needed
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
             case "solarized":
                 setTheme(R.style.Theme_Descansa_Solarized);
@@ -114,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
                 setTheme(R.style.Theme_Descansa_Dracula);
                 break;
             default:
-                // Fallback to default
-                break;
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
+
+        // Ensure theme is applied before setContentView
+        getDelegate().applyDayNight();
     }
 
 

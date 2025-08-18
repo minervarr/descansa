@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Descansa.Dracula" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/dracula_primary</item>
+        <item name="colorPrimaryVariant">@color/dracula_primary_variant</item>
+        <item name="colorOnPrimary">@color/dracula_on_primary</item>
+
+        <!-- Secondary Colors -->
+        <item name="colorSecondary">@color/dracula_secondary</item>
+        <item name="colorSecondaryVariant">@color/dracula_secondary_variant</item>
+        <item name="colorOnSecondary">@color/dracula_on_secondary</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/dracula_background</item>
+        <item name="colorSurface">@color/dracula_surface</item>
+        <item name="colorOnSurface">@color/dracula_on_surface</item>
+        <item name="colorOnBackground">@color/dracula_on_background</item>
+
+        <!-- Status/Navigation Bars -->
+        <item name="android:statusBarColor">@color/dracula_background</item>
+        <item name="android:navigationBarColor">@color/dracula_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/dracula_text_primary</item>
+        <item name="android:textColorSecondary">@color/dracula_text_secondary</item>
+        <item name="android:textColorTertiary">@color/dracula_text_tertiary</item>
+
+        <!-- Window Background -->
+        <item name="android:windowBackground">@color/dracula_background</item>
+    </style>
+</resources>

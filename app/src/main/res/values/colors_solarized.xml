@@ -1,2 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- Solarized Light Theme Colors -->
+
+    <!-- Primary Colors -->
+    <color name="solarized_primary">#268BD2</color>        <!-- Blue -->
+    <color name="solarized_primary_variant">#1E5F8A</color>
+    <color name="solarized_on_primary">#FFFFFF</color>
+
+    <!-- Secondary Colors -->
+    <color name="solarized_secondary">#859900</color>      <!-- Green -->
+    <color name="solarized_secondary_variant">#5B7300</color>
+    <color name="solarized_on_secondary">#FFFFFF</color>
+
+    <!-- Background Colors -->
+    <color name="solarized_background">#FDF6E3</color>     <!-- Base3 (Light Beige) -->
+    <color name="solarized_surface">#EEE8D5</color>        <!-- Base2 -->
+    <color name="solarized_on_surface">#586E75</color>     <!-- Base01 -->
+    <color name="solarized_on_background">#657B83</color>  <!-- Base00 -->
+
+    <!-- Text Colors -->
+    <color name="solarized_text_primary">#073642</color>   <!-- Base02 -->
+    <color name="solarized_text_secondary">#586E75</color> <!-- Base01 -->
+    <color name="solarized_text_tertiary">#839496</color> <!-- Base0 -->
+
+    <!-- Accent Colors -->
+    <color name="solarized_accent">#D33682</color>        <!-- Magenta -->
+</resources>

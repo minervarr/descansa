@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Descansa.EverforestLight" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/everforest_primary</item>
+        <item name="colorPrimaryVariant">@color/everforest_primary_variant</item>
+        <item name="colorOnPrimary">@color/everforest_on_primary</item>
+
+        <!-- Secondary Colors -->
+        <item name="colorSecondary">@color/everforest_secondary</item>
+        <item name="colorSecondaryVariant">@color/everforest_secondary_variant</item>
+        <item name="colorOnSecondary">@color/everforest_on_secondary</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/everforest_background</item>
+        <item name="colorSurface">@color/everforest_surface</item>
+        <item name="colorOnSurface">@color/everforest_on_surface</item>
+        <item name="colorOnBackground">@color/everforest_on_background</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/everforest_primary_variant</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/everforest_text_primary</item>
+        <item name="android:textColorSecondary">@color/everforest_text_secondary</item>
+        <item name="android:textColorTertiary">@color/everforest_text_tertiary</item>
+
+        <!-- Components -->
+        <item name="colorControlNormal">@color/everforest_text_secondary</item>
+        <item name="colorControlActivated">@color/everforest_primary</item>
+        <item name="colorControlHighlight">@color/everforest_accent</item>
+        <item name="colorError">@color/everforest_error</item>
+
+        <!-- Window Background -->
+        <item name="android:windowBackground">@color/everforest_background</item>
+    </style>
+</resources>

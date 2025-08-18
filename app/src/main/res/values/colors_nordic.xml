@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nordic Theme Colors -->
+
+    <!-- Primary Colors -->
+    <color name="nordic_primary">#5E81AC</color>          <!-- Frost Blue -->
+    <color name="nordic_primary_variant">#4C566A</color>  <!-- Dark Blue -->
+    <color name="nordic_on_primary">#ECEFF4</color>       <!-- Snow Storm -->
+
+    <!-- Secondary Colors -->
+    <color name="nordic_secondary">#88C0D0</color>       <!-- Light Blue -->
+    <color name="nordic_secondary_variant">#81A1C1</color>
+    <color name="nordic_on_secondary">#2E3440</color>
+
+    <!-- Background Colors -->
+    <color name="nordic_background">#2E3440</color>       <!-- Polar Night Dark -->
+    <color name="nordic_surface">#3B4252</color>          <!-- Polar Night Medium -->
+    <color name="nordic_on_surface">#E5E9F0</color>       <!-- Snow Storm Light -->
+    <color name="nordic_on_background">#D8DEE9</color>    <!-- Snow Storm Medium -->
+
+    <!-- Text Colors -->
+    <color name="nordic_text_primary">#ECEFF4</color>     <!-- Snow Storm -->
+    <color name="nordic_text_secondary">#88C0D0</color>   <!-- Frost Light Blue -->
+    <color name="nordic_text_tertiary">#4C566A</color>    <!-- Dark Blue -->
+
+    <!-- Accent Colors -->
+    <color name="nordic_accent">#BF616A</color>          <!-- Aurora Red -->
+</resources>

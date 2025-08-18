@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Descansa.Nordic" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/nordic_primary</item>
+        <item name="colorPrimaryVariant">@color/nordic_primary_variant</item>
+        <item name="colorOnPrimary">@color/nordic_on_primary</item>
+
+        <!-- Secondary Colors -->
+        <item name="colorSecondary">@color/nordic_secondary</item>
+        <item name="colorSecondaryVariant">@color/nordic_secondary_variant</item>
+        <item name="colorOnSecondary">@color/nordic_on_secondary</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/nordic_background</item>
+        <item name="colorSurface">@color/nordic_surface</item>
+        <item name="colorOnSurface">@color/nordic_on_surface</item>
+        <item name="colorOnBackground">@color/nordic_on_background</item>
+
+        <!-- Status/Navigation Bars -->
+        <item name="android:statusBarColor">@color/nordic_surface</item>
+        <item name="android:navigationBarColor">@color/nordic_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/nordic_text_primary</item>
+        <item name="android:textColorSecondary">@color/nordic_text_secondary</item>
+        <item name="android:textColorTertiary">@color/nordic_text_tertiary</item>
+
+        <!-- Window Background -->
+        <item name="android:windowBackground">@color/nordic_background</item>
+    </style>
+</resources>

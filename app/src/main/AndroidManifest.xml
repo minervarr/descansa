@@ -28,6 +28,12 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".ThemeSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Descansa" />
+
     </application>
 
 </manifest>

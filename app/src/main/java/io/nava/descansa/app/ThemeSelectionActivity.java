@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -43,13 +45,15 @@ public class ThemeSelectionActivity extends AppCompatActivity {
     private List<Theme> getAllThemes() {
         List<Theme> themes = new ArrayList<>();
 
-        // Light themes (alphabetically ordered)
-        themes.add(new Theme("solarized", "Solarized", true, R.style.Theme_Descansa_Solarized, true));
+        // Light Themes
         themes.add(new Theme("white", "White", true, R.style.Theme_Descansa, false));
+        themes.add(new Theme("solarized", "Solarized", true, R.style.Theme_Descansa_Solarized, true));
+        themes.add(new Theme("everforest", "Everforest", true, R.style.Theme_Descansa_EverforestLight, true));
 
-        // Dark themes (alphabetically ordered)
-        themes.add(new Theme("amoled", "Amoled", false, R.style.Theme_Descansa_AMOLED, true));
+        // Dark Themes
+        themes.add(new Theme("amoled", "AMOLED", false, R.style.Theme_Descansa_AMOLED, true));
         themes.add(new Theme("dracula", "Dracula", false, R.style.Theme_Descansa_Dracula, true));
+        themes.add(new Theme("nordic", "Nordic", false, R.style.Theme_Descansa_Nordic, true));
 
         // Sort each category alphabetically
         List<Theme> lightThemes = new ArrayList<>();
@@ -151,6 +155,7 @@ public class ThemeSelectionActivity extends AppCompatActivity {
             holder.itemView.setSelected(isCurrentTheme);
 
             // Set background based on theme type with preview colors
+            // Set background based on theme type with preview colors
             if (theme.isLight) {
                 holder.itemView.setBackgroundResource(R.drawable.theme_item_light_bg);
                 holder.themeName.setTextColor(getResources().getColor(android.R.color.black, null));
@@ -159,9 +164,16 @@ public class ThemeSelectionActivity extends AppCompatActivity {
                 holder.themeName.setTextColor(getResources().getColor(android.R.color.white, null));
             }
 
-            // Apply current theme selection highlight
+            // Add selection indicator without changing background
             if (isCurrentTheme) {
-                holder.itemView.setBackgroundResource(R.drawable.theme_item_selected_bg);
+                // Option A: Add a border drawable on top
+                holder.itemView.setForeground(getResources().getDrawable(R.drawable.theme_item_selector, null));
+
+                // Option B: Show a checkmark icon (if you have one in your layout)
+                // holder.checkmarkIcon.setVisibility(View.VISIBLE);
+            } else {
+                holder.itemView.setForeground(null);
+                // holder.checkmarkIcon.setVisibility(View.GONE);
             }
 
             holder.itemView.setOnClickListener(v -> applyTheme(theme));
@@ -183,23 +195,19 @@ public class ThemeSelectionActivity extends AppCompatActivity {
     }
 
     private void applyTheme(Theme theme) {
-        // Save theme preference
         SharedPreferences.Editor editor = getSharedPreferences("DescansaPrefs", MODE_PRIVATE).edit();
         editor.putString("theme", theme.id);
-        editor.apply();
+        editor.apply();  // Use commit() if immediate persistence is needed
 
-        // Apply theme
+        // Clear day/night mode override first
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
         if (theme.requiresRecreate) {
-            if (theme.id.equals("amoled")) {
-                setTheme(R.style.Theme_Descansa_AMOLED);
-            } else if (theme.id.equals("dracula")) {
-                setTheme(R.style.Theme_Descansa_Dracula);
-            } else if (theme.id.equals("solarized")) {
-                setTheme(R.style.Theme_Descansa_Solarized);
-            }
-            recreate();
+            // For custom themes (Solarized, Dracula, AMOLED)
+            setTheme(theme.styleResId);
+            recreate();  // Force activity recreation
         } else {
-            // Standard day/night themes
+            // For light/dark system themes
             if (theme.isLight) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             } else {
@@ -207,9 +215,10 @@ public class ThemeSelectionActivity extends AppCompatActivity {
             }
         }
 
-        Toast.makeText(this, theme.displayName + " theme applied", Toast.LENGTH_SHORT).show();
-
-        // Return to main activity
+        // Apply to all activities
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
         finish();
     }
 

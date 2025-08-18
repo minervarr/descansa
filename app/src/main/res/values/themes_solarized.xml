@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Descansa.Solarized" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary Colors -->
+        <item name="colorPrimary">@color/solarized_primary</item>
+        <item name="colorPrimaryVariant">@color/solarized_primary_variant</item>
+        <item name="colorOnPrimary">@color/solarized_on_primary</item>
+
+        <!-- Secondary Colors -->
+        <item name="colorSecondary">@color/solarized_secondary</item>
+        <item name="colorSecondaryVariant">@color/solarized_secondary_variant</item>
+        <item name="colorOnSecondary">@color/solarized_on_secondary</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/solarized_background</item>
+        <item name="colorSurface">@color/solarized_surface</item>
+        <item name="colorOnSurface">@color/solarized_on_surface</item>
+        <item name="colorOnBackground">@color/solarized_on_background</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/solarized_primary_variant</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Text -->
+        <item name="android:textColorPrimary">@color/solarized_text_primary</item>
+        <item name="android:textColorSecondary">@color/solarized_text_secondary</item>
+        <item name="android:textColorTertiary">@color/solarized_text_tertiary</item>
+
+        <!-- Window Background -->
+        <item name="android:windowBackground">@color/solarized_background</item>
+    </style>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Everforest Light Color Palette -->
+
+    <!-- Primary Colors -->
+    <color name="everforest_primary">#3a94c5</color>       <!-- Blue -->
+    <color name="everforest_primary_variant">#28728e</color>
+    <color name="everforest_on_primary">#FFFFFF</color>
+
+    <!-- Secondary Colors -->
+    <color name="everforest_secondary">#8da101</color>     <!-- Green -->
+    <color name="everforest_secondary_variant">#6b7d00</color>
+    <color name="everforest_on_secondary">#FFFFFF</color>
+
+    <!-- Background Colors -->
+    <color name="everforest_background">#fdf6e3</color>    <!-- Background -->
+    <color name="everforest_surface">#efebd4</color>       <!-- Surface -->
+    <color name="everforest_on_surface">#5c6a72</color>    <!-- Text Primary -->
+    <color name="everforest_on_background">#5c6a72</color> <!-- Text Primary -->
+
+    <!-- Text Colors -->
+    <color name="everforest_text_primary">#5c6a72</color>  <!-- Normal Black -->
+    <color name="everforest_text_secondary">#7a847a</color>
+    <color name="everforest_text_tertiary">#999f8e</color>
+
+    <!-- Accent/Error Colors -->
+    <color name="everforest_accent">#dfa000</color>        <!-- Yellow -->
+    <color name="everforest_error">#f85552</color>         <!-- Red -->
+    <color name="everforest_on_error">#FFFFFF</color>
+</resources>
