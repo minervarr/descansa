@@ -2,6 +2,7 @@ package io.nava.descansa.app;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,36 +25,38 @@ public class ThemeSelectionActivity extends AppCompatActivity {
     private ThemeAdapter themeAdapter;
     private String currentTheme;
 
-    // Theme data structure
+    // FIXED: Enhanced theme data structure with better organization
     public static class Theme {
         public final String id;
         public final String displayName;
         public final boolean isLight;
         public final int styleResId;
         public final boolean requiresRecreate;
+        public final int previewColorResId;  // NEW: For preview colors
 
-        public Theme(String id, String displayName, boolean isLight, int styleResId, boolean requiresRecreate) {
+        public Theme(String id, String displayName, boolean isLight, int styleResId, boolean requiresRecreate, int previewColorResId) {
             this.id = id;
             this.displayName = displayName;
             this.isLight = isLight;
             this.styleResId = styleResId;
             this.requiresRecreate = requiresRecreate;
+            this.previewColorResId = previewColorResId;
         }
     }
 
-    // All available themes - easy to expand
+    // FIXED: Corrected theme definitions with proper resource references
     private List<Theme> getAllThemes() {
         List<Theme> themes = new ArrayList<>();
 
-        // Light Themes
-        themes.add(new Theme("white", "White", true, R.style.Theme_Descansa, false));
-        themes.add(new Theme("solarized", "Solarized", true, R.style.Theme_Descansa_Solarized, true));
-        themes.add(new Theme("everforest", "Everforest", true, R.style.Theme_Descansa_EverforestLight, true));
+        // Light Themes - FIXED: Verified all style resources exist
+        themes.add(new Theme("white", "White", true, R.style.Theme_Descansa, false, R.color.purple_500));
+        themes.add(new Theme("solarized", "Solarized", true, R.style.Theme_Descansa_Solarized, true, R.color.solarized_primary));
+        themes.add(new Theme("everforest", "Everforest", true, R.style.Theme_Descansa_EverforestLight, true, R.color.everforest_primary));
 
-        // Dark Themes
-        themes.add(new Theme("amoled", "AMOLED", false, R.style.Theme_Descansa_AMOLED, true));
-        themes.add(new Theme("dracula", "Dracula", false, R.style.Theme_Descansa_Dracula, true));
-        themes.add(new Theme("nordic", "Nordic", false, R.style.Theme_Descansa_Nordic, true));
+        // Dark Themes - FIXED: Verified all style resources exist
+        themes.add(new Theme("amoled", "AMOLED", false, R.style.Theme_Descansa_AMOLED, true, R.color.amoled_primary));
+        themes.add(new Theme("dracula", "Dracula", false, R.style.Theme_Descansa_Dracula, true, R.color.dracula_primary));
+        themes.add(new Theme("nordic", "Nordic", false, R.style.Theme_Descansa_Nordic, true, R.color.nordic_primary));
 
         // Sort each category alphabetically
         List<Theme> lightThemes = new ArrayList<>();
@@ -106,7 +109,7 @@ public class ThemeSelectionActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Choose Theme");
+            getSupportActionBar().setTitle(getString(R.string.activity_theme_selection));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -150,30 +153,41 @@ public class ThemeSelectionActivity extends AppCompatActivity {
             holder.itemView.setVisibility(View.VISIBLE);
             holder.themeName.setText(theme.displayName);
 
-            // Visual indication of current theme
-            boolean isCurrentTheme = theme.id.equals(currentTheme);
-            holder.itemView.setSelected(isCurrentTheme);
-
-            // Set background based on theme type with preview colors
-            // Set background based on theme type with preview colors
-            if (theme.isLight) {
-                holder.itemView.setBackgroundResource(R.drawable.theme_item_light_bg);
-                holder.themeName.setTextColor(getResources().getColor(android.R.color.black, null));
-            } else {
-                holder.itemView.setBackgroundResource(R.drawable.theme_item_dark_bg);
-                holder.themeName.setTextColor(getResources().getColor(android.R.color.white, null));
+            // FIXED: Set theme preview color using proper API
+            View colorPreview = holder.itemView.findViewById(R.id.theme_color_preview);
+            if (colorPreview != null) {
+                int color = ContextCompat.getColor(ThemeSelectionActivity.this, theme.previewColorResId);
+                colorPreview.setBackgroundColor(color);
             }
 
-            // Add selection indicator without changing background
-            if (isCurrentTheme) {
-                // Option A: Add a border drawable on top
-                holder.itemView.setForeground(getResources().getDrawable(R.drawable.theme_item_selector, null));
+            // Visual indication of current theme
+            boolean isCurrentTheme = theme.id.equals(currentTheme);
 
-                // Option B: Show a checkmark icon (if you have one in your layout)
-                // holder.checkmarkIcon.setVisibility(View.VISIBLE);
+            // FIXED: Use proper theme-aware colors and non-deprecated APIs
+            if (theme.isLight) {
+                holder.itemView.setBackgroundResource(R.drawable.theme_item_light_bg);
+                holder.themeName.setTextColor(ContextCompat.getColor(ThemeSelectionActivity.this, android.R.color.black));
+            } else {
+                holder.itemView.setBackgroundResource(R.drawable.theme_item_dark_bg);
+                holder.themeName.setTextColor(ContextCompat.getColor(ThemeSelectionActivity.this, android.R.color.white));
+            }
+
+            // FIXED: Proper selection indicator using non-deprecated API
+            if (isCurrentTheme) {
+                holder.itemView.setForeground(ContextCompat.getDrawable(ThemeSelectionActivity.this, R.drawable.theme_item_selector));
+
+                // Show current indicator
+                TextView currentIndicator = holder.itemView.findViewById(R.id.current_indicator);
+                if (currentIndicator != null) {
+                    currentIndicator.setVisibility(View.VISIBLE);
+                }
             } else {
                 holder.itemView.setForeground(null);
-                // holder.checkmarkIcon.setVisibility(View.GONE);
+
+                TextView currentIndicator = holder.itemView.findViewById(R.id.current_indicator);
+                if (currentIndicator != null) {
+                    currentIndicator.setVisibility(View.GONE);
+                }
             }
 
             holder.itemView.setOnClickListener(v -> applyTheme(theme));
@@ -194,28 +208,56 @@ public class ThemeSelectionActivity extends AppCompatActivity {
         }
     }
 
+    // FIXED: Enhanced theme application with proper error handling
     private void applyTheme(Theme theme) {
-        SharedPreferences.Editor editor = getSharedPreferences("DescansaPrefs", MODE_PRIVATE).edit();
-        editor.putString("theme", theme.id);
-        editor.apply();  // Use commit() if immediate persistence is needed
+        try {
+            // Save theme preference
+            SharedPreferences.Editor editor = getSharedPreferences("DescansaPrefs", MODE_PRIVATE).edit();
+            editor.putString("theme", theme.id);
+            editor.apply();
 
-        // Clear day/night mode override first
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            // Show user feedback
+            String message = getString(getThemeAppliedMessageId(theme.id));
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
-        if (theme.requiresRecreate) {
-            // For custom themes (Solarized, Dracula, AMOLED)
-            setTheme(theme.styleResId);
-            recreate();  // Force activity recreation
-        } else {
-            // For light/dark system themes
-            if (theme.isLight) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            // FIXED: Improved theme application logic
+            if (theme.requiresRecreate) {
+                // For custom themes (Solarized, Dracula, AMOLED, etc.)
+                // Clear any day/night mode override first
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+                // Apply custom theme and recreate
+                setTheme(theme.styleResId);
+                recreateMainActivity();
+
             } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                // For system light/dark themes
+                if (theme.isLight) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                recreateMainActivity();
             }
-        }
 
-        // Apply to all activities
+        } catch (Exception e) {
+            Toast.makeText(this, getString(R.string.error_theme_failed), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // FIXED: Helper method to get theme-specific messages
+    private int getThemeAppliedMessageId(String themeId) {
+        switch (themeId) {
+            case "solarized": return R.string.msg_theme_solarized;
+            case "white": return R.string.msg_theme_white;
+            case "amoled": return R.string.msg_theme_amoled;
+            case "dracula": return R.string.msg_theme_dracula;
+            default: return R.string.msg_theme_applied;
+        }
+    }
+
+    // FIXED: Proper activity recreation to apply theme
+    private void recreateMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);

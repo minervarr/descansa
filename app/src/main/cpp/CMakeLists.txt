@@ -45,7 +45,9 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         native-lib.cpp
         DescansaCore.cpp
         SleepDataStructures.cpp
-        DescansaCoreManager.cpp)
+        DescansaCoreManager.cpp
+        SleepAnalyticsEngine.cpp
+        ThemeManager.cpp)
 
 # Include directories for headers
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
