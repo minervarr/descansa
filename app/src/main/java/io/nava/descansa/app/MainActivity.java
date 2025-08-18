@@ -5,9 +5,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +22,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 import android.content.Intent;
 
 import io.nava.descansa.app.databinding.ActivityMainBinding;
@@ -629,67 +637,161 @@ public class MainActivity extends AppCompatActivity {
         currentSessionText.setVisibility(View.GONE);
     }
 
-    private void updateDebugInfo() {
-        if (isSessionRunning()) {
-            debugText.setText(getString(R.string.debug_session_active));
-        } else {
-            int sessionCount = getSessionCount();
-            double score = getSleepScore();
-            boolean meetingGoals = isMeetingGoals();
+    // ENHANCED: MainActivity theme management methods with smart options support
+// Replace the existing theme-related methods in MainActivity.java with these:
 
-            String debugInfo = String.format("Core Ready - %d sessions | Score: %.0f | Goals: %s",
-                    sessionCount, score, meetingGoals ? "✓" : "✗");
-            debugText.setText(debugInfo);
-        }
-    }
-
-    // ========== THEME MANAGEMENT (Enhanced) ==========
+// ========== ENHANCED THEME MANAGEMENT WITH SMART OPTIONS ==========
 
     private void showThemeSelectionDialog() {
         Intent intent = new Intent(this, ThemeSelectionActivity.class);
         startActivity(intent);
     }
 
+    // ENHANCED: Smart theme application with random and system support
     private void applyStoredTheme() {
         try {
-            String themeId = getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
-                    .getString("theme", "white");
+            SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+            String selectedTheme = prefs.getString("theme", "white");
+            String resolvedTheme = prefs.getString("resolved_theme", "white");
 
-            switch (themeId) {
-                case "white":
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    break;
-                case "solarized":
-                    setTheme(R.style.Theme_Descansa_Solarized);
-                    break;
-                case "everforest":
-                    setTheme(R.style.Theme_Descansa_EverforestLight);
-                    break;
-                case "amoled":
-                    setTheme(R.style.Theme_Descansa_AMOLED);
-                    break;
-                case "dracula":
-                    setTheme(R.style.Theme_Descansa_Dracula);
-                    break;
-                case "nordic":
-                    setTheme(R.style.Theme_Descansa_Nordic);
-                    break;
-                default:
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                    getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
-                            .edit()
-                            .putString("theme", "white")
-                            .apply();
+            // Determine which theme to actually apply
+            String themeToApply = resolvedTheme;
+
+            // Handle smart theme options
+            if (selectedTheme.equals("follow_system")) {
+                themeToApply = "follow_system";
+            } else if (selectedTheme.startsWith("random")) {
+                // For random themes, check if we need to select a new one
+                if (resolvedTheme.isEmpty() || shouldReselectRandomTheme(selectedTheme)) {
+                    themeToApply = selectNewRandomTheme(selectedTheme, prefs);
+                }
+                // Otherwise use the existing resolved theme
             }
 
-            getDelegate().applyDayNight();
+            // Apply the determined theme
+            applySpecificTheme(themeToApply);
+
+            // Update debug info
+            updateThemeDebugInfo(selectedTheme, themeToApply);
 
         } catch (Exception e) {
+            // Fallback on any theme application error
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            showToast(getString(R.string.error_theme_failed));
+            showToast("Theme error - using system default");
         }
     }
 
+    // NEW: Determine if random theme should be reselected
+    private boolean shouldReselectRandomTheme(String selectedTheme) {
+        SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+
+        // Check if this is the first time or if user wants daily randomization
+        long lastRandomSelection = prefs.getLong("last_random_selection", 0);
+        long oneDayAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000);
+
+        // Optional: Re-randomize daily for random themes
+        boolean dailyRandomization = prefs.getBoolean("daily_random", false);
+
+        return dailyRandomization && (lastRandomSelection < oneDayAgo);
+    }
+
+    // NEW: Select new random theme based on type
+    private String selectNewRandomTheme(String randomType, SharedPreferences prefs) {
+        List<String> availableThemes = new ArrayList<>();
+
+        // Define available themes for each category
+        switch (randomType) {
+            case "random":
+                availableThemes.addAll(Arrays.asList("white", "solarized", "everforest", "amoled", "dracula", "nordic"));
+                break;
+            case "random_light":
+                availableThemes.addAll(Arrays.asList("white", "solarized", "everforest"));
+                break;
+            case "random_dark":
+                availableThemes.addAll(Arrays.asList("amoled", "dracula", "nordic"));
+                break;
+            default:
+                return "white";
+        }
+
+        // Select random theme
+        Random random = new Random();
+        String selectedTheme = availableThemes.get(random.nextInt(availableThemes.size()));
+
+        // Save the selection
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("resolved_theme", selectedTheme);
+        editor.putLong("last_random_selection", System.currentTimeMillis());
+        editor.apply();
+
+        return selectedTheme;
+    }
+
+    // ENHANCED: Apply specific theme with all options
+    private void applySpecificTheme(String themeId) {
+        switch (themeId) {
+            case "follow_system":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "white":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "solarized":
+                setTheme(R.style.Theme_Descansa_Solarized);
+                break;
+            case "everforest":
+                setTheme(R.style.Theme_Descansa_EverforestLight);
+                break;
+            case "amoled":
+                setTheme(R.style.Theme_Descansa_AMOLED);
+                break;
+            case "dracula":
+                setTheme(R.style.Theme_Descansa_Dracula);
+                break;
+            case "nordic":
+                setTheme(R.style.Theme_Descansa_Nordic);
+                break;
+            default:
+                // Fallback to system
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
+                        .edit()
+                        .putString("theme", "follow_system")
+                        .putString("resolved_theme", "follow_system")
+                        .apply();
+        }
+
+        // Ensure theme is applied properly
+        getDelegate().applyDayNight();
+    }
+
+    // NEW: Update debug info with theme information
+    private void updateThemeDebugInfo(String selectedTheme, String appliedTheme) {
+        if (selectedTheme.startsWith("random") && !selectedTheme.equals(appliedTheme)) {
+            // For random themes, show what was selected
+            String debugInfo = String.format("Theme: %s (%s)", getThemeDisplayName(selectedTheme), getThemeDisplayName(appliedTheme));
+            // You could display this in a debug text view or log it
+        }
+    }
+
+    // NEW: Get display name for theme
+    private String getThemeDisplayName(String themeId) {
+        switch (themeId) {
+            case "follow_system": return "System";
+            case "random": return "Random";
+            case "random_light": return "Random Light";
+            case "random_dark": return "Random Dark";
+            case "white": return "White";
+            case "solarized": return "Solarized";
+            case "everforest": return "Everforest";
+            case "amoled": return "AMOLED";
+            case "dracula": return "Dracula";
+            case "nordic": return "Nordic";
+            default: return themeId;
+        }
+    }
+
+    // ENHANCED: System UI setup with smart theme awareness
     private void setupSystemUI() {
         try {
             WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
@@ -697,10 +799,8 @@ public class MainActivity extends AppCompatActivity {
             WindowInsetsControllerCompat windowInsetsController =
                     WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
 
-            String currentTheme = getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
-                    .getString("theme", "white");
-
-            boolean isLightTheme = isLightTheme(currentTheme);
+            // Determine if current theme is light
+            boolean isLightTheme = determineIfCurrentThemeIsLight();
 
             windowInsetsController.setAppearanceLightStatusBars(isLightTheme);
             windowInsetsController.setAppearanceLightNavigationBars(isLightTheme);
@@ -716,6 +816,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // ENHANCED: Smart theme light/dark detection
+    private boolean determineIfCurrentThemeIsLight() {
+        SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+        String selectedTheme = prefs.getString("theme", "white");
+        String resolvedTheme = prefs.getString("resolved_theme", "white");
+
+        // For smart themes, use resolved theme
+        String themeToCheck = selectedTheme.startsWith("random") || selectedTheme.equals("follow_system")
+                ? resolvedTheme : selectedTheme;
+
+        // Handle follow_system specially
+        if (themeToCheck.equals("follow_system")) {
+            return (getResources().getConfiguration().uiMode &
+                    android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                    android.content.res.Configuration.UI_MODE_NIGHT_NO;
+        }
+
+        // Regular theme detection
+        return isLightTheme(themeToCheck);
+    }
+
+    // ENHANCED: Check if specific theme is light
     private boolean isLightTheme(String themeId) {
         switch (themeId) {
             case "white":
@@ -726,11 +848,103 @@ public class MainActivity extends AppCompatActivity {
             case "dracula":
             case "nordic":
                 return false;
-            default:
+            case "follow_system":
                 return (getResources().getConfiguration().uiMode &
                         android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
                         android.content.res.Configuration.UI_MODE_NIGHT_NO;
+            default:
+                return true; // Default to light
         }
+    }
+
+    // NEW: Add random theme shuffle button to settings or main screen
+    private void addThemeShuffleOption() {
+        // This could be added to the settings dialog or as a separate button
+        // For now, you could add a long-press on the theme button to shuffle
+        themeButton.setOnLongClickListener(v -> {
+            SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+            String currentTheme = prefs.getString("theme", "white");
+
+            if (currentTheme.startsWith("random")) {
+                // Trigger new random selection
+                selectNewRandomTheme(currentTheme, prefs);
+
+                // Restart activity to apply new theme
+                recreate();
+
+                showToast("🎲 New random theme selected!");
+                return true;
+            } else {
+                showToast("Select a random theme first");
+                return false;
+            }
+        });
+    }
+
+
+
+    // NEW: Check for theme changes and apply if needed
+    private void checkForThemeChanges() {
+        SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+        String currentSelection = prefs.getString("theme", "white");
+        String lastAppliedTheme = prefs.getString("last_applied_theme", "");
+
+        // If theme selection changed, the activity will be recreated automatically
+        // This is just for tracking
+        if (!currentSelection.equals(lastAppliedTheme)) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("last_applied_theme", currentSelection);
+            editor.apply();
+        }
+    }
+
+    // NEW: Enhanced debug info in updateDebugInfo method
+    private void updateDebugInfo() {
+        if (isSessionRunning()) {
+            debugText.setText(getString(R.string.debug_session_active));
+        } else {
+            int sessionCount = getSessionCount();
+            double score = getSleepScore();
+            boolean meetingGoals = isMeetingGoals();
+
+            // Add theme info to debug
+            SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+            String selectedTheme = prefs.getString("theme", "white");
+            String resolvedTheme = prefs.getString("resolved_theme", "white");
+
+            String themeInfo = selectedTheme.equals(resolvedTheme) ?
+                    getThemeDisplayName(selectedTheme) :
+                    getThemeDisplayName(selectedTheme) + "→" + getThemeDisplayName(resolvedTheme);
+
+            String debugInfo = String.format("Sessions: %d | Score: %.0f | Goals: %s | Theme: %s",
+                    sessionCount, score, meetingGoals ? "✓" : "✗", themeInfo);
+            debugText.setText(debugInfo);
+        }
+    }
+
+    // NEW: Add theme preferences to enhanced settings dialog
+    private void addThemePreferencesToSettings(LinearLayout layout) {
+        // Add theme randomization option
+        TextView randomLabel = new TextView(this);
+        randomLabel.setText("Daily Theme Randomization:");
+        randomLabel.setTextSize(14);
+        randomLabel.setPadding(0, 20, 0, 8);
+        layout.addView(randomLabel);
+
+        CheckBox dailyRandomBox = new CheckBox(this);
+        dailyRandomBox.setText("Change random theme daily");
+        boolean currentSetting = getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
+                .getBoolean("daily_random", false);
+        dailyRandomBox.setChecked(currentSetting);
+        layout.addView(dailyRandomBox);
+
+        // Save the setting when dialog is saved
+        // You'd need to handle this in your settings save method:
+    /*
+    SharedPreferences.Editor editor = getSharedPreferences("DescansaPrefs", MODE_PRIVATE).edit();
+    editor.putBoolean("daily_random", dailyRandomBox.isChecked());
+    editor.apply();
+    */
     }
 
     // ========== DATA MANAGEMENT ==========
@@ -776,10 +990,16 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    // ENHANCED: Handle theme changes when returning from theme selection
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Check if theme preference changed
+        checkForThemeChanges();
+
         updateUI();
+
         if (!isUpdating) {
             startPeriodicUpdates();
         }

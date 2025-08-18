@@ -224,6 +224,90 @@
 
     <!--
     ========================================================================
+    SMART THEME OPTIONS - NEW SECTION
+    ========================================================================
+    Advanced theme selection with intelligent options
+    -->
+
+    <!-- Smart theme option names -->
+    <string name="theme_follow_system">Follow System</string>
+    <string name="theme_random">Random</string>
+    <string name="theme_random_light">Random Light</string>
+    <string name="theme_random_dark">Random Dark</string>
+
+    <!-- Smart theme descriptions -->
+    <string name="theme_desc_follow_system">Adapts to system dark/light mode</string>
+    <string name="theme_desc_random">Surprise me with any theme</string>
+    <string name="theme_desc_random_light">Random from light themes</string>
+    <string name="theme_desc_random_dark">Random from dark themes</string>
+
+    <!-- Smart theme application messages -->
+    <string name="msg_theme_follow_system">Following system preferences</string>
+    <string name="msg_theme_random_applied">Random theme: %s</string>
+    <string name="msg_theme_random_light_applied">Random light theme: %s</string>
+    <string name="msg_theme_random_dark_applied">Random dark theme: %s</string>
+    <string name="msg_theme_shuffled">🎲 New random theme selected!</string>
+
+    <!-- Smart theme actions -->
+    <string name="btn_shuffle_theme">🎲 Shuffle</string>
+    <string name="btn_shuffle_random">🎲 Shuffle Random</string>
+    <string name="action_shuffle_theme">Shuffle Random Theme</string>
+
+    <!-- Smart theme settings -->
+    <string name="setting_daily_random">Daily Theme Randomization</string>
+    <string name="setting_daily_random_desc">Change random theme daily</string>
+    <string name="setting_auto_follow_system">Auto-Follow System</string>
+    <string name="setting_auto_follow_system_desc">Automatically switch with system dark mode</string>
+
+    <!-- Smart theme status messages -->
+    <string name="status_theme_random_active">Random theme active</string>
+    <string name="status_theme_following_system">Following system theme</string>
+    <string name="hint_long_press_shuffle">Long press to shuffle random theme</string>
+    <string name="hint_select_random_first">Select a random theme option first</string>
+
+    <!-- Theme category headers - enhanced -->
+    <string name="section_smart_themes">Smart Options</string>
+    <string name="section_regular_themes">Available Themes</string>
+    <string name="section_theme_preferences">Theme Preferences</string>
+
+    <!-- Advanced theme options -->
+    <string name="theme_option_daily_randomization">Daily Randomization</string>
+    <string name="theme_option_smart_switching">Smart Switching</string>
+    <string name="theme_option_schedule_based">Schedule-Based Themes</string>
+
+    <!-- Theme debugging and status -->
+    <string name="debug_theme_info">Theme: %1$s → %2$s</string>
+    <string name="debug_random_theme_selected">Random: %s selected</string>
+    <string name="theme_last_changed">Last changed: %s</string>
+    <string name="theme_random_count">Randomized %d times</string>
+
+    <!-- Error messages for smart themes -->
+    <string name="error_random_theme_selection">Failed to select random theme</string>
+    <string name="error_system_theme_detection">Cannot detect system theme</string>
+    <string name="error_theme_preference_corrupted">Theme preferences corrupted, using default</string>
+
+    <!-- Accessibility for smart themes -->
+    <string name="desc_smart_theme_option">Smart theme option: %s</string>
+    <string name="desc_random_theme_preview">Random theme color preview</string>
+    <string name="desc_system_theme_preview">System theme adaptation preview</string>
+    <string name="desc_shuffle_button">Shuffle random theme selection</string>
+
+    <!-- Plurals for theme statistics -->
+    <plurals name="themes_randomized">
+        <item quantity="zero">No themes randomized</item>
+        <item quantity="one">1 theme randomized</item>
+        <item quantity="other">%d themes randomized</item>
+    </plurals>
+
+    <!-- Theme recommendations -->
+    <string name="recommendation_try_random">Try random themes for variety</string>
+    <string name="recommendation_follow_system">Use system theme for consistency</string>
+    <string name="recommendation_random_light_day">Random light themes for daytime</string>
+    <string name="recommendation_random_dark_night">Random dark themes for evening</string>
+
+
+    <!--
+    ========================================================================
     STATUS CONTEXT MESSAGES
     ========================================================================
     Additional context shown below main status
@@ -405,6 +489,7 @@
     <string name="export_format_csv">CSV (Analysis)</string>
     <string name="export_format_json">JSON (Backup)</string>
     <string name="export_format_summary">Summary Report</string>
+
 
     <!--
     ========================================================================
