@@ -1,0 +1,37 @@
+<resources>
+    <!-- Rose Pine Dawn Theme Colors - Warm Pink/Purple Light Theme -->
+
+    <!-- Primary Colors -->
+    <color name="rose_primary">#D7827E</color>           <!-- Rose Pink -->
+    <color name="rose_primary_variant">#B4637A</color>   <!-- Deeper Rose -->
+    <color name="rose_on_primary">#FFFFFF</color>        <!-- White text on rose -->
+
+    <!-- Secondary Colors -->
+    <color name="rose_secondary">#907AA9</color>         <!-- Soft Purple -->
+    <color name="rose_secondary_variant">#797593</color> <!-- Muted Purple -->
+    <color name="rose_on_secondary">#FFFFFF</color>      <!-- White text on purple -->
+
+    <!-- Background Colors -->
+    <color name="rose_background">#FAF4ED</color>        <!-- Warm Cream Base -->
+    <color name="rose_surface">#F2E9E1</color>           <!-- Slightly Darker Cream -->
+    <color name="rose_on_surface">#575279</color>        <!-- Muted Text -->
+    <color name="rose_on_background">#575279</color>     <!-- Muted Text -->
+
+    <!-- Text Colors -->
+    <color name="rose_text_primary">#575279</color>      <!-- Muted Purple-Gray -->
+    <color name="rose_text_secondary">#797593</color>    <!-- Light Purple-Gray -->
+    <color name="rose_text_tertiary">#9893A5</color>     <!-- Very Light Purple-Gray -->
+
+    <!-- Accent Colors -->
+    <color name="rose_accent">#EA9D34</color>           <!-- Gold accent -->
+    <color name="rose_error">#B4637A</color>            <!-- Rose error -->
+    <color name="rose_on_error">#FFFFFF</color>         <!-- White text on error -->
+
+    <!-- Special Rose Pine Colors -->
+    <color name="rose_love">#B4637A</color>             <!-- Love (deep rose) -->
+    <color name="rose_gold">#EA9D34</color>             <!-- Gold -->
+    <color name="rose_rose">#D7827E</color>             <!-- Rose -->
+    <color name="rose_pine">#286983</color>             <!-- Pine (blue-green) -->
+    <color name="rose_foam">#56949F</color>             <!-- Foam (teal) -->
+    <color name="rose_iris">#907AA9</color>             <!-- Iris (purple) -->
+</resources>

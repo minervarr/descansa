@@ -705,7 +705,7 @@ public class MainActivity extends AppCompatActivity {
                 availableThemes.addAll(Arrays.asList("white", "solarized", "everforest", "amoled", "dracula", "nordic"));
                 break;
             case "random_light":
-                availableThemes.addAll(Arrays.asList("white", "solarized", "everforest"));
+                availableThemes.addAll(Arrays.asList("white", "solarized", "rose_pine"));
                 break;
             case "random_dark":
                 availableThemes.addAll(Arrays.asList("amoled", "dracula", "nordic"));
@@ -739,8 +739,8 @@ public class MainActivity extends AppCompatActivity {
             case "solarized":
                 setTheme(R.style.Theme_Descansa_Solarized);
                 break;
-            case "everforest":
-                setTheme(R.style.Theme_Descansa_EverforestLight);
+            case "rose_pine":
+                setTheme(R.style.Theme_Descansa_RosePine);
                 break;
             case "amoled":
                 setTheme(R.style.Theme_Descansa_AMOLED);
@@ -783,7 +783,7 @@ public class MainActivity extends AppCompatActivity {
             case "random_dark": return "Random Dark";
             case "white": return "White";
             case "solarized": return "Solarized";
-            case "everforest": return "Everforest";
+            case "rose_pine": return "Rose Pine";
             case "amoled": return "AMOLED";
             case "dracula": return "Dracula";
             case "nordic": return "Nordic";
@@ -842,7 +842,7 @@ public class MainActivity extends AppCompatActivity {
         switch (themeId) {
             case "white":
             case "solarized":
-            case "everforest":
+            case "rose_pine":
                 return true;
             case "amoled":
             case "dracula":

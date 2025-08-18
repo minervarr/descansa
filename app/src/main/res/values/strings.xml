@@ -191,7 +191,7 @@
 
     <!-- FIXED: Complete theme names (alphabetically organized) -->
     <!-- Light Themes -->
-    <string name="theme_everforest">Everforest</string>
+    <string name="theme_rose_pine">Rose Pine</string>
     <string name="theme_solarized">Solarized</string>
     <string name="theme_white">White</string>
 
@@ -208,7 +208,7 @@
     <!-- FIXED: Complete theme application messages -->
     <string name="msg_theme_white">White theme applied</string>
     <string name="msg_theme_solarized">Solarized theme applied</string>
-    <string name="msg_theme_everforest">Everforest theme applied</string>
+    <string name="msg_theme_rose_pine">Rose Pine theme applied</string>
     <string name="msg_theme_amoled">AMOLED theme applied</string>
     <string name="msg_theme_dracula">Dracula theme applied</string>
     <string name="msg_theme_nordic">Nordic theme applied</string>
@@ -217,11 +217,18 @@
     <!-- Theme descriptions -->
     <string name="theme_desc_white">Clean light theme</string>
     <string name="theme_desc_solarized">Warm precision colors</string>
-    <string name="theme_desc_everforest">Natural green tones</string>
+    <string name="theme_desc_rose_pine">Warm pink and purple tones</string>
     <string name="theme_desc_amoled">Pure black for OLED</string>
     <string name="theme_desc_dracula">Dark vampire colors</string>
     <string name="theme_desc_nordic">Cool frost palette</string>
 
+    <!-- NEW: Rose Pine specific strings -->
+    <string name="rose_pine_tagline">Where warmth meets elegance</string>
+    <string name="rose_pine_description">Inspired by the natural beauty of roses and pine forests</string>
+
+    <!-- Theme categories with Rose Pine -->
+    <string name="light_theme_options">White • Solarized • Rose Pine</string>
+    <string name="dark_theme_options">AMOLED • Dracula • Nordic</string>
     <!--
     ========================================================================
     SMART THEME OPTIONS - NEW SECTION

@@ -82,8 +82,8 @@ public class ThemeSelectionActivity extends AppCompatActivity {
         themes.add(new Theme("solarized", "Solarized", true, R.style.Theme_Descansa_Solarized,
                 true, R.color.solarized_primary, false, "Warm precision colors"));
 
-        themes.add(new Theme("everforest", "Everforest", true, R.style.Theme_Descansa_EverforestLight,
-                true, R.color.everforest_primary, false, "Natural green tones"));
+        themes.add(new Theme("rose_pine", "Rose Pine", true, R.style.Theme_Descansa_RosePine,
+                true, R.color.rose_primary, false, "Warm pink and purple tones"));
 
         // REGULAR THEMES - Dark
         themes.add(new Theme("amoled", "AMOLED", false, R.style.Theme_Descansa_AMOLED,
