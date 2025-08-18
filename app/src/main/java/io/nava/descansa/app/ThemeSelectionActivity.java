@@ -3,11 +3,12 @@ package io.nava.descansa.app;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,6 @@ public class ThemeSelectionActivity extends AppCompatActivity {
     private RecyclerView themeRecyclerView;
     private ThemeAdapter themeAdapter;
     private String currentTheme;
-    private Button shuffleButton;
 
     // ENHANCED: Theme data structure with smart options
     public static class Theme {
@@ -154,13 +154,16 @@ public class ThemeSelectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // ADD THIS LINE
+        setupSystemUI();
+
         setContentView(R.layout.activity_theme_selection);
 
         // Get current theme (might be a resolved random theme)
         currentTheme = getActualCurrentTheme();
 
         setupToolbar();
-        setupShuffleButton();
         setupRecyclerView();
     }
 
@@ -169,18 +172,6 @@ public class ThemeSelectionActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Choose Theme");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    // NEW: Shuffle button for random themes
-    private void setupShuffleButton() {
-        // Add shuffle button to layout (you'd need to add this to your XML)
-        // For now, we'll create it programmatically
-        shuffleButton = new Button(this);
-        shuffleButton.setText("🎲 Shuffle Random");
-        shuffleButton.setOnClickListener(v -> shuffleRandomTheme());
-
-        // You would add this to your layout XML instead:
-        // shuffleButton = findViewById(R.id.shuffle_button);
     }
 
     private void setupRecyclerView() {
@@ -481,6 +472,64 @@ public class ThemeSelectionActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private void setupSystemUI() {
+        try {
+            // Enable edge-to-edge
+            WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+            WindowInsetsControllerCompat windowInsetsController =
+                    WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+
+            // Determine if current theme is light (same logic as MainActivity)
+            boolean isLightTheme = determineIfCurrentThemeIsLight();
+
+            windowInsetsController.setAppearanceLightStatusBars(isLightTheme);
+            windowInsetsController.setAppearanceLightNavigationBars(isLightTheme);
+
+        } catch (Exception e) {
+            // Fallback - just continue
+        }
+    }
+
+    private boolean determineIfCurrentThemeIsLight() {
+        SharedPreferences prefs = getSharedPreferences("DescansaPrefs", MODE_PRIVATE);
+        String selectedTheme = prefs.getString("theme", "white");
+        String resolvedTheme = prefs.getString("resolved_theme", "white");
+
+        // For smart themes, use resolved theme
+        String themeToCheck = selectedTheme.startsWith("random") || selectedTheme.equals("follow_system")
+                ? resolvedTheme : selectedTheme;
+
+        // Handle follow_system specially
+        if (themeToCheck.equals("follow_system")) {
+            return (getResources().getConfiguration().uiMode &
+                    android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                    android.content.res.Configuration.UI_MODE_NIGHT_NO;
+        }
+
+        // Regular theme detection
+        return isLightTheme(themeToCheck);
+    }
+
+    private boolean isLightTheme(String themeId) {
+        switch (themeId) {
+            case "white":
+            case "solarized":
+            case "rose_pine":
+                return true;
+            case "amoled":
+            case "dracula":
+            case "nordic":
+                return false;
+            case "follow_system":
+                return (getResources().getConfiguration().uiMode &
+                        android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                        android.content.res.Configuration.UI_MODE_NIGHT_NO;
+            default:
+                return true; // Default to light
+        }
     }
 
     @Override

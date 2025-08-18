@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        android.util.Log.e("DescansaTest", "=== APP STARTED - LOGGING TEST ===");
+
         super.onCreate(savedInstanceState);
 
         // Apply theme before UI setup
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupButtonListeners() {
         sleepButton.setOnClickListener(v -> handleSleepButtonClick());
         exportButton.setOnClickListener(v -> showExportOptionsDialog());
-        settingsButton.setOnClickListener(v -> showEnhancedSettingsDialog());
+        settingsButton.setOnClickListener(v -> showSettingsDialog());
         clearDataButton.setOnClickListener(v -> handleClearData());
         themeButton.setOnClickListener(v -> showThemeSelectionDialog());
 
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
     // ========== ENHANCED UI UPDATES ==========
 
     private void updateUI() {
+        android.util.Log.e("DescansaTest", "=== updateUI() called ===");
         updateStatusSection();
         updateInformationGrid();
         updateEnhancedMetrics();
@@ -201,9 +205,9 @@ public class MainActivity extends AppCompatActivity {
 
     // ========== ENHANCED DIALOGS ==========
 
-    private void showEnhancedSettingsDialog() {
+    private void showSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enhanced Sleep Settings");
+        builder.setTitle("Sleep Settings");
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -214,100 +218,144 @@ public class MainActivity extends AppCompatActivity {
         int currentWakeHour = getCurrentWakeHour();
         int currentWakeMinute = getCurrentWakeMinute();
 
-        // Target sleep hours
+        // === SLEEP DURATION ===
         TextView sleepLabel = new TextView(this);
-        sleepLabel.setText("Target Sleep Hours:");
+        sleepLabel.setText("How many hours do you want to sleep?");
         sleepLabel.setTextSize(14);
         layout.addView(sleepLabel);
 
-        EditText sleepInput = new EditText(this);
-        sleepInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER |
-                android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        sleepInput.setText(String.valueOf(currentSleepHours));
-        layout.addView(sleepInput);
+        LinearLayout sleepTimeLayout = new LinearLayout(this);
+        sleepTimeLayout.setOrientation(LinearLayout.HORIZONTAL);
+        sleepTimeLayout.setPadding(0, 8, 0, 0);
 
-        // Wake time
+        EditText sleepHourInput = new EditText(this);
+        sleepHourInput.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        sleepHourInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        sleepHourInput.setText(String.valueOf((int)currentSleepHours));
+        sleepHourInput.setHint("8");
+        sleepTimeLayout.addView(sleepHourInput);
+
+        TextView sleepColonLabel = new TextView(this);
+        sleepColonLabel.setText(" h ");
+        sleepColonLabel.setTextSize(16);
+        sleepColonLabel.setPadding(8, 0, 8, 0);
+        sleepTimeLayout.addView(sleepColonLabel);
+
+        // FIXED: Better precision for displaying current sleep minutes
+        EditText sleepMinuteInput = new EditText(this);
+        sleepMinuteInput.setLayoutParams(new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        sleepMinuteInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+
+        // FIXED: More precise minute calculation
+        double fractionalHours = currentSleepHours - Math.floor(currentSleepHours);
+        int currentSleepMinutes = (int) Math.round(fractionalHours * 60);
+
+        sleepMinuteInput.setText(String.valueOf(currentSleepMinutes));
+        sleepMinuteInput.setHint("30");
+        sleepTimeLayout.addView(sleepMinuteInput);
+
+        TextView sleepMinLabel = new TextView(this);
+        sleepMinLabel.setText(" m");
+        sleepMinLabel.setTextSize(16);
+        sleepMinLabel.setPadding(8, 0, 0, 0);
+        sleepTimeLayout.addView(sleepMinLabel);
+
+        layout.addView(sleepTimeLayout);
+
+        // === WAKE TIME ===
         TextView wakeLabel = new TextView(this);
-        wakeLabel.setText("Wake Time:");
+        wakeLabel.setText("What time do you want to wake up?");
         wakeLabel.setTextSize(14);
-        wakeLabel.setPadding(0, 20, 0, 8);
+        wakeLabel.setPadding(0, 32, 0, 8);
+        wakeLabel.setTextColor(getResources().getColor(android.R.color.black));
         layout.addView(wakeLabel);
 
-        LinearLayout timeLayout = new LinearLayout(this);
-        timeLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout wakeTimeLayout = new LinearLayout(this);
+        wakeTimeLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        EditText hourInput = new EditText(this);
-        hourInput.setLayoutParams(new LinearLayout.LayoutParams(0,
+        EditText wakeHourInput = new EditText(this);
+        wakeHourInput.setLayoutParams(new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        hourInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        hourInput.setText(String.valueOf(currentWakeHour));
-        timeLayout.addView(hourInput);
+        wakeHourInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        wakeHourInput.setText(String.valueOf(currentWakeHour));
+        wakeHourInput.setHint("7");
+        wakeTimeLayout.addView(wakeHourInput);
 
-        TextView colonLabel = new TextView(this);
-        colonLabel.setText(" : ");
-        colonLabel.setTextSize(18);
-        colonLabel.setPadding(16, 0, 16, 0);
-        timeLayout.addView(colonLabel);
+        TextView wakeColonLabel = new TextView(this);
+        wakeColonLabel.setText(" : ");
+        wakeColonLabel.setTextSize(18);
+        wakeColonLabel.setPadding(16, 0, 16, 0);
+        wakeTimeLayout.addView(wakeColonLabel);
 
-        EditText minuteInput = new EditText(this);
-        minuteInput.setLayoutParams(new LinearLayout.LayoutParams(0,
+        EditText wakeMinuteInput = new EditText(this);
+        wakeMinuteInput.setLayoutParams(new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        minuteInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        minuteInput.setText(String.valueOf(currentWakeMinute));
-        timeLayout.addView(minuteInput);
+        wakeMinuteInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        wakeMinuteInput.setText(String.valueOf(currentWakeMinute));
+        wakeMinuteInput.setHint("00");
+        wakeTimeLayout.addView(wakeMinuteInput);
 
-        layout.addView(timeLayout);
-
-        // NEW: Target efficiency
-        TextView efficiencyLabel = new TextView(this);
-        efficiencyLabel.setText("Target Sleep Efficiency (%):");
-        efficiencyLabel.setTextSize(14);
-        efficiencyLabel.setPadding(0, 20, 0, 8);
-        layout.addView(efficiencyLabel);
-
-        SeekBar efficiencySeekBar = new SeekBar(this);
-        efficiencySeekBar.setMax(30); // 70-100%
-        efficiencySeekBar.setProgress(15); // Default 85%
-        layout.addView(efficiencySeekBar);
-
-        TextView efficiencyValue = new TextView(this);
-        efficiencyValue.setText("85%");
-        efficiencyValue.setTextSize(12);
-        layout.addView(efficiencyValue);
-
-        efficiencySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int efficiency = 70 + progress;
-                efficiencyValue.setText(efficiency + "%");
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
+        layout.addView(wakeTimeLayout);
 
         builder.setView(layout);
+        builder.setNeutralButton("Help", (dialog, which) -> showSettingsHelpDialog());
 
         builder.setPositiveButton("Save", (dialog, which) -> {
             try {
-                double sleepHours = Double.parseDouble(sleepInput.getText().toString().trim());
-                int hour = Integer.parseInt(hourInput.getText().toString().trim());
-                int minute = Integer.parseInt(minuteInput.getText().toString().trim());
-                double efficiency = 70 + efficiencySeekBar.getProgress();
+                int sleepHours = Integer.parseInt(sleepHourInput.getText().toString().trim());
+                int sleepMinutes = Integer.parseInt(sleepMinuteInput.getText().toString().trim());
+                int wakeHour = Integer.parseInt(wakeHourInput.getText().toString().trim());
+                int wakeMinute = Integer.parseInt(wakeMinuteInput.getText().toString().trim());
 
-                if (sleepHours > 0 && sleepHours <= 12 &&
-                        hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
+                // FIXED: Better decimal conversion to avoid precision loss
+                double totalSleepHours = sleepHours + (sleepMinutes / 60.0);
 
-                    setEnhancedSleepGoals(sleepHours, hour, hour, efficiency);
+                // FIXED: Increased limit from 12 to 24 hours
+                if (totalSleepHours > 0 && totalSleepHours <= 24.0 &&
+                        wakeHour >= 0 && wakeHour <= 23 &&
+                        wakeMinute >= 0 && wakeMinute <= 59 &&
+                        sleepMinutes >= 0 && sleepMinutes <= 59) {
+
+                    // FIXED: Save sleep goals without wake time
+                    setEnhancedSleepGoals(totalSleepHours, wakeHour, wakeHour, 85.0);
+
+                    // FIXED: Save wake time separately to preserve minutes
+                    setTargetWakeTime(wakeHour, wakeMinute);
+
                     saveData();
-                    showToast("Enhanced settings saved");
+                    showToast("Settings saved");
                     updateUI();
+                } else {
+                    showToast("Please enter valid times");
                 }
             } catch (NumberFormatException e) {
-                showToast("Invalid time format");
+                showToast("Please enter valid numbers");
             }
         });
 
         builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void showSettingsHelpDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Sleep Settings Help");
+
+        // Create scrollable content
+        android.widget.ScrollView scrollView = new android.widget.ScrollView(this);
+        TextView helpText = new TextView(this);
+        helpText.setText(android.text.Html.fromHtml(getString(R.string.help_sleep_settings),
+                android.text.Html.FROM_HTML_MODE_COMPACT));
+        helpText.setPadding(40, 20, 40, 20);
+        helpText.setTextSize(14);
+        helpText.setLineSpacing(4, 1.2f);
+
+        scrollView.addView(helpText);
+        builder.setView(scrollView);
+
+        builder.setPositiveButton("Got it", null);
         builder.show();
     }
 
@@ -553,15 +601,27 @@ public class MainActivity extends AppCompatActivity {
     // ========== STATUS UPDATES (Enhanced) ==========
 
     private void updateStatusSection() {
-        if (isSessionRunning()) {
+        android.util.Log.e("DescansaTest", "=== updateStatusSection() called ===");
+
+        boolean sessionRunning = isSessionRunning();
+        boolean inSleepPeriod = isInSleepPeriod();
+        boolean beforeWake = isBeforeTargetWakeTime();
+
+        android.util.Log.e("DescansaTest", "sessionRunning: " + sessionRunning);
+        android.util.Log.e("DescansaTest", "inSleepPeriod: " + inSleepPeriod);
+        android.util.Log.e("DescansaTest", "beforeWake: " + beforeWake);
+
+        if (sessionRunning) {
+            android.util.Log.e("DescansaTest", "Calling updateSleepingStatus()");
             updateSleepingStatus();
-        } else if (isInSleepPeriod() && isBeforeTargetWakeTime()) {
+        } else if (inSleepPeriod && beforeWake) {
+            android.util.Log.e("DescansaTest", "Calling updateSleepOpportunityStatus()");
             updateSleepOpportunityStatus();
         } else {
+            android.util.Log.e("DescansaTest", "Calling updateAwakeStatus()");
             updateAwakeStatus();
         }
 
-        // Enhanced: Show additional context
         updateContextualInfo();
     }
 
@@ -590,42 +650,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSleepOpportunityStatus() {
+        android.util.Log.e("DescansaTest", "=== updateSleepOpportunityStatus() called ===");
+
         statusText.setText(getString(R.string.status_sleep_window));
         sleepButton.setText(getString(R.string.btn_start_sleep));
 
-        String availableTime = getTimeUntilWakeFormatted();
-        String availableText = getString(R.string.format_sleep_available, availableTime);
-        currentSessionText.setText(availableText);
-        currentSessionText.setVisibility(TextView.VISIBLE);
+        // FIXED: Update the label to show "Time until wake" instead of "Work Time"
+        TextView workTimeLabel = findViewById(R.id.work_time_label);
+        String nextWakeTime = getNextWakeTimeFormatted();
+        String timeUntilWake = getTimeUntilWakeFormatted();
 
-        workTimeText.setText(availableTime);
+        // Set the dynamic label
+        String labelText = getString(R.string.label_time_until_wake_dynamic, nextWakeTime);
+        workTimeLabel.setText(labelText);
+        workTimeLabel.setVisibility(View.VISIBLE);
+
+        // Set the time value
+        workTimeText.setText(timeUntilWake);
+
+        currentSessionText.setVisibility(TextView.GONE);
     }
 
     private void updateAwakeStatus() {
+        android.util.Log.e("DescansaTest", "=== updateAwakeStatus() called ===");
+
+        double sleepHours = getCurrentTargetSleepHours();
+        int wakeHour = getCurrentWakeHour();
+        int wakeMinute = getCurrentWakeMinute();
+
+        android.util.Log.d("DescansaDebug", "Settings - sleepHours: " + sleepHours + ", wake: " + wakeHour + ":" + wakeMinute);
+
         TextView workTimeLabel = findViewById(R.id.work_time_label);
 
-        if (isInSleepPeriod()) {
-            String nextWakeTime = getNextWakeTimeFormatted();
-            String timeUntilWake = getTimeUntilNextWakeFormatted();
+        // DEBUG: Let's see what the C++ backend is returning
+        boolean inSleepPeriod = isInSleepPeriod();
+        boolean beforeWake = isBeforeTargetWakeTime();
+        String nextWake = getNextWakeTimeFormatted();
+        String timeUntilWake = getTimeUntilNextWakeFormatted();
+        String workTime = getRemainingWorkTimeFormatted();
 
-            String leftText = "Time until " + nextWakeTime + ":";
-            workTimeLabel.setText(leftText);
+        // Log the values so we can see what's happening
+        android.util.Log.d("DescansaDebug", "=== updateAwakeStatus DEBUG ===");
+        android.util.Log.d("DescansaDebug", "inSleepPeriod: " + inSleepPeriod);
+        android.util.Log.d("DescansaDebug", "beforeWake: " + beforeWake);
+        android.util.Log.d("DescansaDebug", "nextWake: " + nextWake);
+        android.util.Log.d("DescansaDebug", "timeUntilWake: " + timeUntilWake);
+        android.util.Log.d("DescansaDebug", "workTime: " + workTime);
+
+        if (inSleepPeriod) {
+            // We're past bedtime - show time until wake
+            android.util.Log.d("DescansaDebug", "IN SLEEP PERIOD - showing time until wake");
+
+            String labelText = getString(R.string.format_time_until_wake, nextWake, "");
+            // Remove the extra part to just get "Time until XX:XX:"
+            workTimeLabel.setText(labelText);
             workTimeLabel.setVisibility(View.VISIBLE);
-
             workTimeText.setText(timeUntilWake);
 
-            if (isBeforeTargetWakeTime()) {
+            if (beforeWake) {
                 statusText.setText(getString(R.string.status_sleeping));
             } else {
                 statusText.setText(getString(R.string.status_good_morning));
             }
 
         } else {
+            // Normal work time
+            android.util.Log.d("DescansaDebug", "NORMAL WORK TIME - showing work time");
+
             workTimeLabel.setText(getString(R.string.label_work_time_short));
             workTimeLabel.setVisibility(View.VISIBLE);
-
             statusText.setText(getString(R.string.status_awake));
-            String workTime = getRemainingWorkTimeFormatted();
+
             if (workTime.equals(getString(R.string.default_zero_time))) {
                 workTimeText.setText(getString(R.string.status_past_bedtime));
             } else {

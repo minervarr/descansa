@@ -134,8 +134,7 @@
     Labels and content for the settings/configuration dialog
     -->
 
-    <!-- Title of settings dialog -->
-    <string name="dialog_settings_title">Sleep Settings</string>
+    <!-- Title of settings dialog On the button is the one -->
 
     <!-- Label for target sleep duration input -->
     <string name="label_target_sleep_hours">Target Sleep Hours:</string>
@@ -201,7 +200,7 @@
     <string name="theme_nordic">Nordic</string>
 
     <!-- Theme selection screen elements -->
-    <string name="theme_selection_hint">Tap a theme to apply it</string>
+    <string name="theme_selection_hint">Tap any theme to apply it • Tap random themes again to shuffle</string>
     <string name="theme_current_indicator">CURRENT</string>
     <string name="theme_preview_label">Preview</string>
 
@@ -348,6 +347,27 @@
     <!-- Time until specific wake time format -->
     <string name="format_time_until_wake">Time until %1$s: %2$s</string>
 
+
+
+    <!-- WE NEED TO DELETE THE ONES WE NO LONGER USE Add these new strings to your strings.xml -->
+
+    <!-- Dynamic work time labels -->
+    <string name="label_time_until_wake">Time until %1$s:</string>
+    <string name="label_work_time_remaining">Work time left:</string>
+    <string name="label_time_until_bedtime">Time until bedtime:</string>
+
+    <!-- Status messages for different periods -->
+    <string name="status_approaching_bedtime">Approaching bedtime</string>
+    <string name="status_should_be_sleeping">Should be sleeping</string>
+    <string name="status_sleep_opportunity">Sleep opportunity available</string>
+
+    <!-- Time format helpers -->
+    <string name="format_wake_time_24h">%1$02d:%2$02d</string>
+    <string name="format_time_remaining">%1$s remaining</string>
+
+    <string name="label_time_until_wake_dynamic">Time until %1$s:</string>
+
+    <string name="label_time_until_wake_simple">Time until %1$s:</string>
     <!--
     ========================================================================
     SUCCESS MESSAGES
@@ -496,6 +516,31 @@
     <string name="export_format_csv">CSV (Analysis)</string>
     <string name="export_format_json">JSON (Backup)</string>
     <string name="export_format_summary">Summary Report</string>
+
+    <!-- Sleep Settings Help Content -->
+    <string name="btn_help">Help</string>
+    <string name="dialog_help_title">Sleep Settings Help</string>
+    <string name="help_sleep_settings">
+<![CDATA[
+<b>Target Sleep Hours:</b><br/>
+How many hours you want to sleep each night. Most adults need 7-9 hours.<br/><br/>
+
+<b>Wake Time:</b><br/>
+When you want to wake up each day. The app calculates your bedtime based on this.<br/><br/>
+
+<b>Target Sleep Efficiency:</b><br/>
+Percentage of time in bed actually sleeping. 85% is excellent - it means out of 8 hours in bed, you sleep 6.8 hours.<br/><br/>
+
+<b>How it works:</b><br/>
+- Set wake time: 7:00 AM<br/>
+- Set sleep hours: 8 hours<br/>
+- App shows bedtime: 11:00 PM<br/>
+- Work time remaining until 11:00 PM
+]]>
+</string>
+
+    <!-- Update existing string (remove "Enhanced") -->
+    <string name="dialog_settings_title">Sleep Settings</string>
 
 
     <!--
