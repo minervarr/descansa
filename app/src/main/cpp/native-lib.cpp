@@ -229,42 +229,4 @@ Java_io_nava_descansa_app_MainActivity_getNextWakeTimeFormatted(
     std::string formatted = g_core->get_next_wake_time_formatted();
     return env->NewStringUTF(formatted.c_str());
 }
-
-// Theme management JNI methods (only essential ones)
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_setThemeMode(
-        JNIEnv* /* env */, jobject /* this */, jint theme_mode) {
-    ensure_core_initialized();
-
-    // Convert Java int to ThemeMode enum
-    descansa::ThemeMode mode;
-    switch (theme_mode) {
-        case 0: mode = descansa::ThemeMode::SYSTEM_DEFAULT; break;
-        case 1: mode = descansa::ThemeMode::LIGHT; break;
-        case 2: mode = descansa::ThemeMode::DARK; break;
-        case 3: mode = descansa::ThemeMode::AMOLED; break;
-        default: mode = descansa::ThemeMode::SYSTEM_DEFAULT; break;
-    }
-
-    g_core->set_theme_mode(mode);
-    g_core->save_data(); // Persist immediately
-}
-
-JNIEXPORT jint JNICALL
-Java_io_nava_descansa_app_MainActivity_getThemeMode(
-        JNIEnv* /* env */, jobject /* this */) {
-    ensure_core_initialized();
-
-    descansa::ThemeMode mode = g_core->get_theme_mode();
-
-    // Convert ThemeMode enum to Java int
-    switch (mode) {
-        case descansa::ThemeMode::SYSTEM_DEFAULT: return 0;
-        case descansa::ThemeMode::LIGHT: return 1;
-        case descansa::ThemeMode::DARK: return 2;
-        case descansa::ThemeMode::AMOLED: return 3;
-        default: return 0;
-    }
-}
-
 } // extern "C"

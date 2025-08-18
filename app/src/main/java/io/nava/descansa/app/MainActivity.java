@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import java.io.File;
+import android.content.Intent;
 
 import io.nava.descansa.app.databinding.ActivityMainBinding;
 
@@ -90,133 +91,35 @@ public class MainActivity extends AppCompatActivity {
 
     // ========== THEME MANAGEMENT ==========
 
-    private void applyStoredTheme() {
-        int themeMode = getThemeMode();
-
-        switch (themeMode) {
-            case 0: // System Default
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-            case 1: // Light
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case 2: // Dark
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            case 3: // AMOLED
-                setTheme(R.style.Theme_Descansa_AMOLED);
-                break;
-        }
-    }
-
     private void showThemeSelectionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.dialog_theme_title));
-
-        // Main theme options using strings.xml
-        String[] mainThemeOptions = {
-                getString(R.string.theme_system),
-                getString(R.string.theme_light),
-                getString(R.string.theme_dark)
-        };
-
-        // Get current theme and convert to main theme (0,1,2)
-        int currentTheme = 0;
-        try {
-            int fullTheme = getThemeMode();
-            // Convert: 0=System, 1=Light, 2&3=Dark
-            if (fullTheme == 1) currentTheme = 1; // Light
-            else if (fullTheme == 2 || fullTheme == 3) currentTheme = 2; // Dark (or AMOLED)
-            else currentTheme = 0; // System
-        } catch (Exception e) {
-            currentTheme = 0;
-        }
-
-        builder.setSingleChoiceItems(mainThemeOptions, currentTheme, (dialog, which) -> {
-            dialog.dismiss();
-
-            if (which == 2) { // Dark theme selected
-                showDarkThemeOptionsDialog();
-            } else {
-                // Apply System (0) or Light (1) directly
-                try {
-                    setThemeMode(which);
-                    applyTheme(which);
-                    showToast(getString(R.string.msg_theme_applied));
-                } catch (Exception e) {
-                    showToast(getString(R.string.msg_theme_failed));
-                }
-            }
-        });
-
-        builder.setNegativeButton(getString(R.string.btn_cancel), null);
-        builder.show();
+        Intent intent = new Intent(this, ThemeSelectionActivity.class);
+        startActivity(intent);
     }
 
-    private void showDarkThemeOptionsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.dialog_dark_theme_title));
+    private void applyStoredTheme() {
+        String theme = getSharedPreferences("DescansaPrefs", MODE_PRIVATE)
+                .getString("theme", "white");
 
-        String[] darkOptions = {
-                getString(R.string.theme_dark_standard),
-                getString(R.string.theme_dark_amoled)
-        };
-
-        // Check if currently using AMOLED (theme 3) or regular dark (theme 2)
-        int currentDarkOption = 0;
-        try {
-            int fullTheme = getThemeMode();
-            currentDarkOption = (fullTheme == 3) ? 1 : 0; // 0=Standard, 1=AMOLED
-        } catch (Exception e) {
-            currentDarkOption = 0;
-        }
-
-        builder.setSingleChoiceItems(darkOptions, currentDarkOption, (dialog, which) -> {
-            try {
-                // Convert to full theme mode: 0=Standard Dark (2), 1=AMOLED (3)
-                int themeMode = (which == 0) ? 2 : 3;
-                setThemeMode(themeMode);
-                applyTheme(themeMode);
-
-                // Use appropriate success message
-                String message = (which == 0) ?
-                        getString(R.string.msg_theme_standard_dark) :
-                        getString(R.string.msg_theme_amoled);
-                showToast(message);
-            } catch (Exception e) {
-                showToast(getString(R.string.msg_theme_failed));
-            }
-            dialog.dismiss();
-        });
-
-        builder.setNegativeButton(getString(R.string.btn_back), (dialog, which) -> {
-            dialog.dismiss();
-            showThemeSelectionDialog(); // Go back to main theme dialog
-        });
-
-        builder.show();
-    }
-
-    private void applyTheme(int themeMode) {
-        switch (themeMode) {
-            case 0: // System Default
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                recreate();
+        switch (theme) {
+            case "white":
+                // Default light theme - no action needed
                 break;
-            case 1: // Light
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                recreate();
+            case "solarized":
+                setTheme(R.style.Theme_Descansa_Solarized);
                 break;
-            case 2: // Dark
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                recreate();
-                break;
-            case 3: // AMOLED
+            case "amoled":
                 setTheme(R.style.Theme_Descansa_AMOLED);
-                recreate();
+                break;
+            case "dracula":
+                setTheme(R.style.Theme_Descansa_Dracula);
+                break;
+            default:
+                // Fallback to default
                 break;
         }
     }
+
+
 
     // ========== INITIALIZATION ==========
 
@@ -617,10 +520,6 @@ public class MainActivity extends AppCompatActivity {
     public native boolean saveData();
     public native boolean exportAnalysisCsv(String exportPath);
     public native void clearHistory();
-
-    // NEW: Theme management (only used methods)
-    public native void setThemeMode(int mode);
-    public native int getThemeMode();
 
     static {
         System.loadLibrary("descansa");

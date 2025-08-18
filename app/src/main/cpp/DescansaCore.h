@@ -16,25 +16,6 @@ namespace descansa {
 
 // Forward declarations
     struct ScheduleConfig;
-    struct ThemeConfig;
-
-// Theme management enums and structs
-    enum class ThemeMode {
-        SYSTEM_DEFAULT = 0,
-        LIGHT = 1,
-        DARK = 2,
-        AMOLED = 3
-    };
-
-// Theme configuration
-    struct ThemeConfig {
-        ThemeMode mode;
-        bool follow_system;
-
-        ThemeConfig()
-                : mode(ThemeMode::SYSTEM_DEFAULT),
-                  follow_system(true) {}
-    };
 
 // Daily schedule configuration
     struct ScheduleConfig {
@@ -92,7 +73,6 @@ namespace descansa {
     private:
         std::vector<SleepSession> sleep_history;
         ScheduleConfig config;
-        ThemeConfig theme_config;  // NEW: Theme configuration
         TimePoint current_session_start;
         bool session_active;
         std::string data_file_path;
@@ -115,10 +95,6 @@ namespace descansa {
         void set_target_sleep_hours(double hours);
         void set_target_wake_time(int hour, int minute);
         const ScheduleConfig& get_config() const { return config; }
-
-        // NEW: Theme management (essential methods only)
-        void set_theme_mode(ThemeMode mode);
-        ThemeMode get_theme_mode() const;
 
         // Calculations
         Duration get_last_sleep_duration() const;
@@ -149,7 +125,7 @@ namespace descansa {
         std::string get_next_wake_time_formatted() const;
 
         // Helper method for 24-hour time formatting
-        std::string format_wake_time_24h(const TimePoint& wake_time) const;
+        static std::string format_wake_time_24h(const TimePoint& wake_time) ;
 
         // REMOVED UNUSED FUNCTIONS - These are never called in the codebase:
         // - get_recent_sessions() - Not used anywhere

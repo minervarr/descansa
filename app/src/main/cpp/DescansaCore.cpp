@@ -111,10 +111,6 @@ namespace descansa {
              << config.target_wake_hour.count() << ","
              << config.target_wake_minute.count() << "\n";
 
-        // NEW: Save theme config
-        file << "THEME:" << static_cast<int>(theme_config.mode) << ","
-             << (theme_config.follow_system ? "1" : "0") << "\n";
-
         // Save sessions with full configuration context (existing code)
         for (const auto& session : sleep_history) {
             if (session.is_complete) {
@@ -168,22 +164,7 @@ namespace descansa {
                     config.target_wake_minute = std::chrono::minutes(std::stoi(token));
                 }
             }
-                // NEW: Load theme config
-            else if (type == "THEME") {
-                std::istringstream ss(data);
-                std::string token;
 
-                if (std::getline(ss, token, ',')) {
-                    int theme_mode = std::stoi(token);
-                    // Validate theme mode range
-                    if (theme_mode >= 0 && theme_mode <= 3) {
-                        theme_config.mode = static_cast<ThemeMode>(theme_mode);
-                    }
-                }
-                if (std::getline(ss, token, ',')) {
-                    theme_config.follow_system = (token == "1");
-                }
-            }
             else if (type == "SESSION") {
                 std::istringstream ss(data);
                 std::string token;
@@ -342,7 +323,7 @@ namespace descansa {
         return format_wake_time_24h(next_wake);
     }
 
-    std::string DescansaCore::format_wake_time_24h(const TimePoint& wake_time) const {
+    std::string DescansaCore::format_wake_time_24h(const TimePoint& wake_time) {
         auto time_t = std::chrono::system_clock::to_time_t(wake_time);
         auto tm = *std::localtime(&time_t);
 
@@ -350,22 +331,6 @@ namespace descansa {
         ss << std::setfill('0') << std::setw(2) << tm.tm_hour << ":"
            << std::setfill('0') << std::setw(2) << tm.tm_min;
         return ss.str();
-    }
-
-    // Theme management implementation (simplified)
-    void DescansaCore::set_theme_mode(ThemeMode mode) {
-        theme_config.mode = mode;
-
-        // If user manually selects a theme, disable system follow
-        if (mode != ThemeMode::SYSTEM_DEFAULT) {
-            theme_config.follow_system = false;
-        } else {
-            theme_config.follow_system = true;
-        }
-    }
-
-    ThemeMode DescansaCore::get_theme_mode() const {
-        return theme_config.mode;
     }
 
 // Utility functions implementation - ONLY keeping functions that are actually used

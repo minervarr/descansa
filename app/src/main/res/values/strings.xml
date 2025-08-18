@@ -1,117 +1,486 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App Identity -->
+    <!--
+    ========================================================================
+    DESCANSA - Sleep Tracking App Strings
+    ========================================================================
+
+    TRANSLATION NOTES:
+    - This app helps users track sleep and manage work time
+    - Keep translations concise - mobile screen space is limited
+    - Times are displayed in format "8h 30m" (hours and minutes)
+    - Maintain consistent terminology throughout
+    - Test translations with longer text to ensure UI doesn't break
+
+    CONTEXT: This is a minimalist sleep tracking app that:
+    1. Tracks when user starts/stops sleeping
+    2. Calculates remaining work time before bedtime
+    3. Shows sleep statistics and averages
+    4. Exports data for analysis
+
+    ========================================================================
+    -->
+
+    <!--
+    ========================================================================
+    APP IDENTITY
+    ========================================================================
+    -->
+
+    <!--
+    App name - appears in launcher, notifications, system dialogs
+    CONTEXT: "Descansa" means "rest" in Spanish - consider keeping original or translating
+    -->
     <string name="app_name">Descansa</string>
 
-    <!-- Status Messages - All Externalized -->
+    <!--
+    ========================================================================
+    MAIN STATUS MESSAGES
+    ========================================================================
+    These appear as the main status at top of screen
+    -->
+
+    <!--
+    User is currently awake and using the app normally
+    CONTEXT: Default state when app opens and user hasn't started sleep
+    -->
     <string name="status_awake">AWAKE</string>
+
+    <!--
+    User is currently in a sleep session (actively sleeping)
+    CONTEXT: Shows when user tapped "Start Sleep" and session is running
+    -->
     <string name="status_sleeping">SLEEPING</string>
+
+    <!--
+    App is ready to use, neutral state
+    CONTEXT: Initial state when app first loads
+    -->
     <string name="status_ready">Ready</string>
+
+    <!--
+    It's currently within the user's intended sleep hours
+    CONTEXT: Shows when current time is between bedtime and wake time
+    -->
     <string name="status_sleep_window">Sleep Window Active</string>
+
+    <!--
+    User's wake time has passed, greeting them
+    CONTEXT: Shows after user's target wake time when they open the app
+    -->
     <string name="status_good_morning">Good Morning!</string>
 
-    <!-- Action Buttons - No Emojis -->
+    <!--
+    ========================================================================
+    ACTION BUTTONS - PRIMARY
+    ========================================================================
+    Main interaction buttons - keep short for mobile screens
+    -->
+
+    <!--
+    Button to begin tracking sleep session
+    CONTEXT: Large button user taps when going to bed
+    -->
     <string name="btn_start_sleep">Start Sleep</string>
+
+    <!--
+    Button to end current sleep session
+    CONTEXT: Same button as start_sleep, but text changes when session is active
+    -->
     <string name="btn_end_sleep">End Sleep</string>
+
+    <!--
+    ========================================================================
+    ACTION BUTTONS - SECONDARY
+    ========================================================================
+    Smaller utility buttons - keep very short due to limited space
+    -->
+
+    <!--
+    Export sleep data to file
+    CONTEXT: Small button that saves data to Documents folder
+    -->
     <string name="btn_export_short">Export</string>
+
+    <!--
+    Delete all sleep data
+    CONTEXT: Small button with warning color, opens confirmation dialog
+    -->
     <string name="btn_clear_short">Clear</string>
+
+    <!--
+    Open settings dialog
+    CONTEXT: Small button in header to change sleep goals and wake time
+    -->
     <string name="btn_settings_short">Settings</string>
 
-    <!-- Dialog Buttons -->
+    <!--
+    Open theme selection menu
+    CONTEXT: Small button in header to change app appearance
+    -->
+    <string name="btn_theme">Theme</string>
+
+    <!--
+    ========================================================================
+    DIALOG BUTTONS
+    ========================================================================
+    Standard dialog action buttons
+    -->
+
+    <!-- Save changes in settings dialog -->
     <string name="btn_save">Save</string>
+
+    <!-- Cancel action, close dialog without saving -->
     <string name="btn_cancel">Cancel</string>
+
+    <!-- Confirm dangerous action (like clearing data) -->
     <string name="btn_clear">Clear</string>
 
-    <!-- Section Headers -->
-    <string name="section_sleep_info">Sleep Information</string>
-    <string name="section_phone_usage">Phone Usage</string>
+    <!-- Go back to previous menu level -->
+    <string name="btn_back">Back</string>
 
-    <!-- Information Labels - Compact -->
+    <!--
+    ========================================================================
+    INFORMATION LABELS
+    ========================================================================
+    Labels for the data grid - keep short, they're paired with values
+    -->
+
+    <!--
+    Label for time remaining until bedtime
+    CONTEXT: Shows next to countdown timer "Work Time: 4h 30m"
+    -->
     <string name="label_work_time_short">Work Time:</string>
-    <string name="label_last_sleep_short">Last Sleep:</string>
-    <string name="label_average_short">7-Day Avg:</string>
-    <string name="label_sessions_short">Sessions:</string>
-    <string name="label_last_phone_use">Last Used:</string>
 
-    <!-- Settings Dialog Labels -->
+    <!--
+    Label for duration of most recent sleep
+    CONTEXT: Shows next to time value "Last Sleep: 7h 45m"
+    -->
+    <string name="label_last_sleep_short">Last Sleep:</string>
+
+    <!--
+    Label for average sleep over recent days
+    CONTEXT: Shows next to calculated average "7-Day Avg: 8h 15m"
+    -->
+    <string name="label_average_short">7-Day Avg:</string>
+
+    <!--
+    Label for total number of recorded sleep sessions
+    CONTEXT: Shows next to number "Sessions: 23"
+    -->
+    <string name="label_sessions_short">Sessions:</string>
+
+    <!--
+    ========================================================================
+    SETTINGS DIALOG
+    ========================================================================
+    Labels and content for the settings/configuration dialog
+    -->
+
+    <!-- Title of settings dialog -->
     <string name="dialog_settings_title">Sleep Settings</string>
-    <string name="dialog_clear_title">Clear All Data</string>
-    <string name="dialog_clear_message">Delete all sleep sessions?</string>
+
+    <!--
+    Label for target sleep duration input
+    CONTEXT: Above text field where user enters desired sleep hours (like "8.0")
+    -->
     <string name="label_target_sleep_hours">Target Sleep Hours:</string>
+
+    <!--
+    Label for wake time input section
+    CONTEXT: Above the hour:minute time picker controls
+    -->
     <string name="label_wake_time">Wake Time:</string>
+
+    <!--
+    Separator between hour and minute inputs
+    CONTEXT: Appears between two number fields "08 : 30"
+    -->
     <string name="label_time_separator"> : </string>
 
-    <!-- Input Hints -->
+    <!--
+    ========================================================================
+    INPUT HINTS
+    ========================================================================
+    Placeholder text in input fields to guide users
+    -->
+
+    <!-- Hint for sleep hours input field -->
     <string name="hint_sleep_hours">8.0</string>
+
+    <!-- Hint for hour input (0-23) -->
     <string name="hint_hour">Hour</string>
+
+    <!-- Hint for minute input (0-59) -->
     <string name="hint_minute">Min</string>
 
-    <!-- Status Context Messages -->
+    <!--
+    ========================================================================
+    DATA CLEARING DIALOG
+    ========================================================================
+    Confirmation dialog for destructive action
+    -->
+
+    <!-- Title of dangerous action confirmation -->
+    <string name="dialog_clear_title">Clear All Data</string>
+
+    <!--
+    Confirmation message for clearing data
+    CONTEXT: Warns user before permanently deleting all sleep records
+    -->
+    <string name="dialog_clear_message">Delete all sleep sessions?</string>
+
+    <!-- Add these to your existing strings.xml -->
+
+    <!--
+    ========================================================================
+    THEME SELECTION SCREEN
+    ========================================================================
+    New full-screen theme selection with organized table layout
+    -->
+
+    <!-- Column headers for theme table -->
+    <string name="theme_header_light">Light</string>
+    <string name="theme_header_dark">Dark</string>
+
+    <!-- Individual theme names (alphabetically organized) -->
+    <string name="theme_solarized">Solarized</string>
+    <string name="theme_white">White</string>
+    <string name="theme_amoled">Amoled</string>
+    <string name="theme_dracula">Dracula</string>
+
+    <!-- Theme selection screen elements -->
+    <string name="theme_selection_hint">Tap a theme to apply it</string>
+    <string name="theme_current_indicator">CURRENT</string>
+
+    <!-- Theme application messages -->
+    <string name="msg_theme_solarized">Solarized theme applied</string>
+    <string name="msg_theme_white">White theme applied</string>
+    <string name="msg_theme_amoled">AMOLED theme applied</string>
+    <string name="msg_theme_dracula">Dracula theme applied</string>
+
+    <!-- Activity title -->
+    <string name="activity_theme_selection">Choose Theme</string>
+
+
+    <!--
+    ========================================================================
+    STATUS CONTEXT MESSAGES
+    ========================================================================
+    Additional context shown below main status
+    -->
+
+    <!--
+    Shown during active sleep session with duration
+    CONTEXT: "Sleeping..." appears below "SLEEPING" status
+    -->
     <string name="status_sleeping_msg">Sleeping…</string>
+
+    <!--
+    Shown when current time is past intended bedtime
+    CONTEXT: Instead of work time, shows user should be sleeping
+    -->
     <string name="status_past_bedtime">Past bedtime</string>
+
+    <!--
+    Shown when target wake time has already passed today
+    CONTEXT: Wake time was 7:00 AM but it's now 9:00 AM
+    -->
     <string name="status_wake_passed">Wake time passed</string>
 
-    <!-- Format Strings - All Parameterized -->
+    <!--
+    ========================================================================
+    FORMATTED TEXT PATTERNS
+    ========================================================================
+    Templates for dynamic content - translators should preserve %s/%1$s placeholders
+    -->
+
+    <!--
+    Shows current session duration
+    CONTEXT: %s gets replaced with time like "2h 15m"
+    EXAMPLE: "Session: 2h 15m"
+    -->
     <string name="format_session_duration">Session: %s</string>
+
+    <!--
+    Shows available sleep time remaining
+    CONTEXT: %s gets replaced with time until wake
+    EXAMPLE: "Available: 6h 45m"
+    -->
     <string name="format_sleep_available">Available: %s</string>
+
+    <!--
+    Template for exported filename
+    CONTEXT: %s gets replaced with timestamp
+    EXAMPLE: "descansa_data_1648594820.csv"
+    -->
     <string name="export_filename_template">descansa_data_%s.csv</string>
 
-    <!-- Success Messages -->
+    <!--
+    ========================================================================
+    SUCCESS MESSAGES
+    ========================================================================
+    Brief confirmations shown in toast notifications
+    -->
+
+    <!-- Confirmation when sleep session starts -->
     <string name="msg_sleep_started">Sleep session started</string>
+
+    <!-- Confirmation when sleep session ends -->
     <string name="msg_sleep_ended">Sleep session ended</string>
+
+    <!--
+    Confirmation when data export completes
+    CONTEXT: %1$s gets replaced with filename
+    EXAMPLE: "Exported: my_data.csv"
+    -->
     <string name="msg_data_exported">Exported: %1$s</string>
+
+    <!-- Confirmation when all data is cleared -->
     <string name="msg_data_cleared">Data cleared</string>
+
+    <!-- Confirmation when settings are saved -->
     <string name="msg_settings_saved">Settings saved</string>
 
-    <!-- Error Messages -->
+    <!-- Confirmation when theme is applied -->
+    <string name="msg_theme_applied">Theme applied</string>
+
+    <!--
+    ========================================================================
+    ERROR MESSAGES
+    ========================================================================
+    Error messages for when operations fail
+    -->
+
+    <!-- Generic export failure message -->
     <string name="error_export_failed">Export failed</string>
+
+    <!--
+    Detailed export error with technical details
+    CONTEXT: %s gets replaced with technical error message
+    EXAMPLE: "Export error: Permission denied"
+    -->
     <string name="error_export_error">Export error: %s</string>
+
+    <!--
+    Error when user enters invalid time in settings
+    CONTEXT: User entered "25:70" or negative numbers
+    -->
     <string name="error_invalid_time">Invalid time format</string>
 
-    <!-- Debug Messages -->
+    <!-- Error when theme change fails -->
+    <string name="error_theme_failed">Theme change failed</string>
+
+    <!--
+    ========================================================================
+    DEBUG INFORMATION
+    ========================================================================
+    Technical status messages - can be more technical in translation
+    -->
+
+    <!-- Debug message when app starts successfully -->
     <string name="debug_core_ready">Core Ready</string>
+
+    <!-- Debug message when sleep session is active -->
     <string name="debug_session_active">Session Active</string>
+
+    <!--
+    Debug message showing core status with session count
+    CONTEXT: %d gets replaced with number of recorded sessions
+    EXAMPLE: "Core Ready - 15 sessions"
+    -->
     <string name="debug_core_status">Core Ready - %d sessions</string>
 
-    <!-- Default Values -->
+    <!--
+    ========================================================================
+    DEFAULT/FALLBACK VALUES
+    ========================================================================
+    Displayed when no data is available
+    -->
+
+    <!--
+    Shown when no data exists yet
+    CONTEXT: In place of time values when user hasn't slept yet
+    -->
     <string name="default_no_data">--</string>
+
+    <!--
+    Shown for zero duration
+    CONTEXT: When calculated time is exactly zero
+    -->
     <string name="default_zero_time">0h 0m</string>
+
+    <!--
+    Empty string for conditional visibility
+    CONTEXT: Used to hide elements dynamically
+    -->
     <string name="default_empty" />
 
-    <!-- Accessibility Descriptions -->
+    <!--
+    ========================================================================
+    ACCESSIBILITY DESCRIPTIONS
+    ========================================================================
+    Screen reader descriptions - be descriptive for visually impaired users
+    -->
+
+    <!-- Description of main sleep tracking button -->
     <string name="desc_sleep_button">Start or stop sleep tracking</string>
+
+    <!-- Description of settings button -->
     <string name="desc_settings_button">Open sleep settings</string>
+
+    <!-- Description of export button -->
     <string name="desc_export_button">Export sleep data</string>
+
+    <!-- Description of clear data button -->
     <string name="desc_clear_button">Clear all data</string>
 
-    <!-- Future Features - Reserved Strings -->
-    <string name="label_screen_time">Screen Time:</string>
-    <string name="label_app_opens">App Opens:</string>
-    <string name="status_phone_last_used">Last used: %s</string>
-
-    <!-- Theme Selection Strings - Updated for hierarchical selection -->
-    <string name="dialog_theme_title">Choose Theme</string>
-    <string name="dialog_dark_theme_title">Dark Theme Options</string>
-
-    <!-- Main Theme Options -->
-    <string name="theme_system">Follow System</string>
-    <string name="theme_light">Light</string>
-    <string name="theme_dark">Dark</string>
-
-    <!-- Dark Theme Sub-options -->
-    <string name="theme_dark_standard">Standard Dark</string>
-    <string name="theme_dark_amoled">AMOLED Black</string>
-
-    <!-- Theme Messages -->
-    <string name="msg_theme_applied">Theme applied</string>
-    <string name="msg_theme_standard_dark">Standard dark applied</string>
-    <string name="msg_theme_amoled">AMOLED black applied</string>
-    <string name="msg_theme_failed">Theme change failed</string>
-
-    <!-- Theme Button (still needed for layout) -->
-    <string name="btn_theme">Theme</string>
+    <!-- Description of theme selection button -->
     <string name="desc_theme_button">Change app theme</string>
 
-    <!-- Dialog Buttons -->
-    <string name="btn_back">Back</string>
+    <!--
+    ========================================================================
+    SECTION HEADERS
+    ========================================================================
+    Optional section dividers in the UI
+    -->
+
+    <!--
+    Header for main sleep information area
+    CONTEXT: Small header above the sleep statistics grid
+    -->
+    <string name="section_sleep_info">Sleep Information</string>
+
+    <!--
+    Header for phone usage tracking (future feature)
+    CONTEXT: Reserved for planned phone usage statistics
+    -->
+    <string name="section_phone_usage">Phone Usage</string>
+
+    <!--
+    ========================================================================
+    RESERVED STRINGS - FUTURE FEATURES
+    ========================================================================
+    Prepared for planned features - translate but may not appear yet
+    -->
+
+    <!-- Future: Phone screen time tracking -->
+    <string name="label_screen_time">Screen Time:</string>
+
+    <!-- Future: Number of times phone was opened -->
+    <string name="label_app_opens">App Opens:</string>
+
+    <!--
+    Future: Last phone usage time
+    CONTEXT: %s will be time like "2h ago"
+    EXAMPLE: "Last used: 2h ago"
+    -->
+    <string name="status_phone_last_used">Last used: %s</string>
+
+    <!--
+    Future: Last phone usage label for data grid
+    CONTEXT: Shows in information grid next to timestamp
+    -->
+    <string name="label_last_phone_use">Last Used:</string>
 
 </resources>
