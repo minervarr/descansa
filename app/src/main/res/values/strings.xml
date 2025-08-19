@@ -2,24 +2,11 @@
 <resources>
     <!--
     ========================================================================
-    DESCANSA - Sleep Tracking App Strings (IMPROVED & ORGANIZED)
+    DESCANSA - Sleep Tracking App Strings (SIMPLIFIED VERSION)
     ========================================================================
 
-    TRANSLATION NOTES:
-    - This app helps users track sleep and manage work time
-    - Keep translations concise - mobile screen space is limited
-    - Times are displayed in format "8h 30m" (hours and minutes)
-    - Maintain consistent terminology throughout
-    - Test translations with longer text to ensure UI doesn't break
-
-    CONTEXT: This is a minimalist sleep tracking app that:
-    1. Tracks when user starts/stops sleeping
-    2. Calculates remaining work time before bedtime
-    3. Shows sleep statistics and averages
-    4. Exports data for analysis
-    5. Provides multiple theme options
-
-    VERSION: Enhanced with comprehensive theme support
+    This is the CLEAN, SIMPLIFIED version with only essential strings.
+    No survey dialogs, no complex features, just core sleep tracking.
     ========================================================================
     -->
 
@@ -28,540 +15,171 @@
     APP IDENTITY
     ========================================================================
     -->
-
-    <!-- App name - appears in launcher, notifications, system dialogs -->
     <string name="app_name">Descansa</string>
-
-    <!-- App description for store/about -->
-    <string name="app_description">Simple sleep tracking and work time management</string>
 
     <!--
     ========================================================================
     MAIN STATUS MESSAGES
     ========================================================================
-    These appear as the main status at top of screen
     -->
-
-    <!-- User is currently awake and using the app normally -->
     <string name="status_awake">AWAKE</string>
-
-    <!-- User is currently in a sleep session (actively sleeping) -->
     <string name="status_sleeping">SLEEPING</string>
-
-    <!-- App is ready to use, neutral state -->
     <string name="status_ready">Ready</string>
-
-    <!-- It's currently within the user's intended sleep hours -->
     <string name="status_sleep_window">Sleep Window Active</string>
-
-    <!-- User's wake time has passed, greeting them -->
     <string name="status_good_morning">Good Morning!</string>
 
     <!--
     ========================================================================
-    ACTION BUTTONS - PRIMARY
+    ACTION BUTTONS
     ========================================================================
-    Main interaction buttons - keep short for mobile screens
     -->
-
-    <!-- Button to begin tracking sleep session -->
     <string name="btn_start_sleep">Start Sleep</string>
-
-    <!-- Button to end current sleep session -->
     <string name="btn_end_sleep">End Sleep</string>
-
-    <!--
-    ========================================================================
-    ACTION BUTTONS - SECONDARY
-    ========================================================================
-    Smaller utility buttons - keep very short due to limited space
-    -->
-
-    <!-- Export sleep data to file -->
     <string name="btn_export_short">Export</string>
-
-    <!-- Delete all sleep data -->
     <string name="btn_clear_short">Clear</string>
-
-    <!-- Open settings dialog -->
     <string name="btn_settings_short">Settings</string>
-
-    <!-- Open theme selection menu -->
     <string name="btn_theme">Theme</string>
 
     <!--
     ========================================================================
     DIALOG BUTTONS
     ========================================================================
-    Standard dialog action buttons
     -->
-
-    <!-- Save changes in settings dialog -->
     <string name="btn_save">Save</string>
-
-    <!-- Cancel action, close dialog without saving -->
     <string name="btn_cancel">Cancel</string>
-
-    <!-- Confirm dangerous action (like clearing data) -->
     <string name="btn_clear">Clear</string>
-
-    <!-- Go back to previous menu level -->
-    <string name="btn_back">Back</string>
 
     <!--
     ========================================================================
     INFORMATION LABELS
     ========================================================================
-    Labels for the data grid - keep short, they're paired with values
     -->
-
-    <!-- Label for time remaining until bedtime -->
     <string name="label_work_time_short">Work Time:</string>
-
-    <!-- Label for duration of most recent sleep -->
     <string name="label_last_sleep_short">Last Sleep:</string>
-
-    <!-- Label for average sleep over recent days -->
     <string name="label_average_short">7-Day Avg:</string>
-
-    <!-- Label for total number of recorded sleep sessions -->
     <string name="label_sessions_short">Sessions:</string>
 
     <!--
     ========================================================================
     SETTINGS DIALOG
     ========================================================================
-    Labels and content for the settings/configuration dialog
     -->
-
-    <!-- Title of settings dialog On the button is the one -->
-
-    <!-- Label for target sleep duration input -->
-    <string name="label_target_sleep_hours">Target Sleep Hours:</string>
-
-    <!-- Label for wake time input section -->
-    <string name="label_wake_time">Wake Time:</string>
-
-    <!-- Separator between hour and minute inputs -->
-    <string name="label_time_separator"> : </string>
-
-    <!--
-    ========================================================================
-    INPUT HINTS
-    ========================================================================
-    Placeholder text in input fields to guide users
-    -->
-
-    <!-- Hint for sleep hours input field -->
-    <string name="hint_sleep_hours">8.0</string>
-
-    <!-- Hint for hour input (0-23) -->
-    <string name="hint_hour">Hour</string>
-
-    <!-- Hint for minute input (0-59) -->
-    <string name="hint_minute">Min</string>
+    <string name="dialog_settings_title">Sleep Settings</string>
 
     <!--
     ========================================================================
     DATA CLEARING DIALOG
     ========================================================================
-    Confirmation dialog for destructive action
     -->
-
-    <!-- Title of dangerous action confirmation -->
     <string name="dialog_clear_title">Clear All Data</string>
-
-    <!-- Confirmation message for clearing data -->
     <string name="dialog_clear_message">Delete all sleep sessions?</string>
 
     <!--
     ========================================================================
-    THEME SELECTION SYSTEM - ENHANCED
+    THEME SELECTION - KEEP AS IS
     ========================================================================
-    Complete theme selection interface with organized table layout
     -->
-
-    <!-- Activity title -->
     <string name="activity_theme_selection">Choose Theme</string>
-
-    <!-- Column headers for theme table -->
     <string name="theme_header_light">Light Themes</string>
     <string name="theme_header_dark">Dark Themes</string>
 
-    <!-- FIXED: Complete theme names (alphabetically organized) -->
-    <!-- Light Themes -->
-    <string name="theme_rose_pine">Rose Pine</string>
-    <string name="theme_solarized">Solarized</string>
+    <!-- Theme names -->
     <string name="theme_white">White</string>
-
-    <!-- Dark Themes -->
+    <string name="theme_solarized">Solarized</string>
+    <string name="theme_rose_pine">Rose Pine</string>
     <string name="theme_amoled">AMOLED</string>
     <string name="theme_dracula">Dracula</string>
     <string name="theme_nordic">Nordic</string>
 
-    <!-- Theme selection screen elements -->
-    <string name="theme_selection_hint">Tap any theme to apply it • Tap random themes again to shuffle</string>
-    <string name="theme_current_indicator">CURRENT</string>
-    <string name="theme_preview_label">Preview</string>
-
-    <!-- FIXED: Complete theme application messages -->
-    <string name="msg_theme_white">White theme applied</string>
-    <string name="msg_theme_solarized">Solarized theme applied</string>
-    <string name="msg_theme_rose_pine">Rose Pine theme applied</string>
-    <string name="msg_theme_amoled">AMOLED theme applied</string>
-    <string name="msg_theme_dracula">Dracula theme applied</string>
-    <string name="msg_theme_nordic">Nordic theme applied</string>
-    <string name="msg_theme_applied">Theme applied</string>
+    <!-- Smart themes -->
+    <string name="theme_follow_system">Follow System</string>
+    <string name="theme_random">Random</string>
+    <string name="theme_random_light">Random Light</string>
+    <string name="theme_random_dark">Random Dark</string>
 
     <!-- Theme descriptions -->
-    <string name="theme_desc_white">Clean light theme</string>
+    <string name="theme_desc_follow_system">Adapts to system dark/light mode</string>
+    <string name="theme_desc_random">Surprise me with any theme</string>
+    <string name="theme_desc_random_light">Random from light themes</string>
+    <string name="theme_desc_random_dark">Random from dark themes</string>
+    <string name="theme_desc_white">Clean and minimal</string>
     <string name="theme_desc_solarized">Warm precision colors</string>
     <string name="theme_desc_rose_pine">Warm pink and purple tones</string>
     <string name="theme_desc_amoled">Pure black for OLED</string>
     <string name="theme_desc_dracula">Dark vampire colors</string>
     <string name="theme_desc_nordic">Cool frost palette</string>
 
-    <!-- NEW: Rose Pine specific strings -->
-    <string name="rose_pine_tagline">Where warmth meets elegance</string>
-    <string name="rose_pine_description">Inspired by the natural beauty of roses and pine forests</string>
+    <string name="theme_selection_hint">Tap any theme to apply it • Tap random themes again to shuffle</string>
+    <string name="theme_current_indicator">CURRENT</string>
 
-    <!-- Theme categories with Rose Pine -->
-    <string name="light_theme_options">White • Solarized • Rose Pine</string>
-    <string name="dark_theme_options">AMOLED • Dracula • Nordic</string>
-    <!--
-    ========================================================================
-    SMART THEME OPTIONS - NEW SECTION
-    ========================================================================
-    Advanced theme selection with intelligent options
-    -->
-
-    <!-- Smart theme option names -->
-    <string name="theme_follow_system">Follow System</string>
-    <string name="theme_random">Random</string>
-    <string name="theme_random_light">Random Light</string>
-    <string name="theme_random_dark">Random Dark</string>
-
-    <!-- Smart theme descriptions -->
-    <string name="theme_desc_follow_system">Adapts to system dark/light mode</string>
-    <string name="theme_desc_random">Surprise me with any theme</string>
-    <string name="theme_desc_random_light">Random from light themes</string>
-    <string name="theme_desc_random_dark">Random from dark themes</string>
-
-    <!-- Smart theme application messages -->
+    <!-- Theme messages -->
     <string name="msg_theme_follow_system">Following system preferences</string>
     <string name="msg_theme_random_applied">Random theme: %s</string>
-    <string name="msg_theme_random_light_applied">Random light theme: %s</string>
-    <string name="msg_theme_random_dark_applied">Random dark theme: %s</string>
     <string name="msg_theme_shuffled">🎲 New random theme selected!</string>
+    <string name="msg_theme_applied">Theme applied</string>
 
-    <!-- Smart theme actions -->
-    <string name="btn_shuffle_theme">🎲 Shuffle</string>
-    <string name="btn_shuffle_random">🎲 Shuffle Random</string>
-    <string name="action_shuffle_theme">Shuffle Random Theme</string>
-
-    <!-- Smart theme settings -->
-    <string name="setting_daily_random">Daily Theme Randomization</string>
-    <string name="setting_daily_random_desc">Change random theme daily</string>
-    <string name="setting_auto_follow_system">Auto-Follow System</string>
-    <string name="setting_auto_follow_system_desc">Automatically switch with system dark mode</string>
-
-    <!-- Smart theme status messages -->
-    <string name="status_theme_random_active">Random theme active</string>
-    <string name="status_theme_following_system">Following system theme</string>
-    <string name="hint_long_press_shuffle">Long press to shuffle random theme</string>
-    <string name="hint_select_random_first">Select a random theme option first</string>
-
-    <!-- Theme category headers - enhanced -->
-    <string name="section_smart_themes">Smart Options</string>
-    <string name="section_regular_themes">Available Themes</string>
-    <string name="section_theme_preferences">Theme Preferences</string>
-
-    <!-- Advanced theme options -->
-    <string name="theme_option_daily_randomization">Daily Randomization</string>
-    <string name="theme_option_smart_switching">Smart Switching</string>
-    <string name="theme_option_schedule_based">Schedule-Based Themes</string>
-
-    <!-- Theme debugging and status -->
-    <string name="debug_theme_info">Theme: %1$s → %2$s</string>
-    <string name="debug_random_theme_selected">Random: %s selected</string>
-    <string name="theme_last_changed">Last changed: %s</string>
-    <string name="theme_random_count">Randomized %d times</string>
-
-    <!-- Error messages for smart themes -->
-    <string name="error_random_theme_selection">Failed to select random theme</string>
-    <string name="error_system_theme_detection">Cannot detect system theme</string>
-    <string name="error_theme_preference_corrupted">Theme preferences corrupted, using default</string>
-
-    <!-- Accessibility for smart themes -->
-    <string name="desc_smart_theme_option">Smart theme option: %s</string>
-    <string name="desc_random_theme_preview">Random theme color preview</string>
-    <string name="desc_system_theme_preview">System theme adaptation preview</string>
-    <string name="desc_shuffle_button">Shuffle random theme selection</string>
-
-    <!-- Plurals for theme statistics -->
-    <plurals name="themes_randomized">
-        <item quantity="zero">No themes randomized</item>
-        <item quantity="one">1 theme randomized</item>
-        <item quantity="other">%d themes randomized</item>
-    </plurals>
-
-    <!-- Theme recommendations -->
-    <string name="recommendation_try_random">Try random themes for variety</string>
-    <string name="recommendation_follow_system">Use system theme for consistency</string>
-    <string name="recommendation_random_light_day">Random light themes for daytime</string>
-    <string name="recommendation_random_dark_night">Random dark themes for evening</string>
-
-
-    <!--
-    ========================================================================
-    STATUS CONTEXT MESSAGES
-    ========================================================================
-    Additional context shown below main status
-    -->
-
-    <!-- Shown during active sleep session with duration -->
-    <string name="status_sleeping_msg">Sleeping…</string>
-
-    <!-- Shown when current time is past intended bedtime -->
-    <string name="status_past_bedtime">Past bedtime</string>
-
-    <!-- Shown when target wake time has already passed today -->
-    <string name="status_wake_passed">Wake time passed</string>
-
-    <!--
-    ========================================================================
-    FORMATTED TEXT PATTERNS
-    ========================================================================
-    Templates for dynamic content - preserve placeholders
-    -->
-
-    <!-- Shows current session duration -->
-    <string name="format_session_duration">Session: %s</string>
-
-    <!-- Shows available sleep time remaining -->
-    <string name="format_sleep_available">Available: %s</string>
-
-    <!-- Template for exported filename -->
-    <string name="export_filename_template">descansa_data_%s.csv</string>
-
-    <!-- Time until specific wake time format -->
-    <string name="format_time_until_wake">Time until %1$s: %2$s</string>
-
-
-
-    <!-- WE NEED TO DELETE THE ONES WE NO LONGER USE Add these new strings to your strings.xml -->
-
-    <!-- Dynamic work time labels -->
-    <string name="label_time_until_wake">Time until %1$s:</string>
-    <string name="label_work_time_remaining">Work time left:</string>
-    <string name="label_time_until_bedtime">Time until bedtime:</string>
-
-    <!-- Status messages for different periods -->
-    <string name="status_approaching_bedtime">Approaching bedtime</string>
-    <string name="status_should_be_sleeping">Should be sleeping</string>
-    <string name="status_sleep_opportunity">Sleep opportunity available</string>
-
-    <!-- Time format helpers -->
-    <string name="format_wake_time_24h">%1$02d:%2$02d</string>
-    <string name="format_time_remaining">%1$s remaining</string>
-
-    <string name="label_time_until_wake_dynamic">Time until %1$s:</string>
-
-    <string name="label_time_until_wake_simple">Time until %1$s:</string>
     <!--
     ========================================================================
     SUCCESS MESSAGES
     ========================================================================
-    Brief confirmations shown in toast notifications
     -->
-
-    <!-- Confirmation when sleep session starts -->
     <string name="msg_sleep_started">Sleep session started</string>
-
-    <!-- Confirmation when sleep session ends -->
     <string name="msg_sleep_ended">Sleep session ended</string>
-
-    <!-- Confirmation when data export completes -->
     <string name="msg_data_exported">Exported: %1$s</string>
-
-    <!-- Confirmation when all data is cleared -->
     <string name="msg_data_cleared">Data cleared</string>
-
-    <!-- Confirmation when settings are saved -->
     <string name="msg_settings_saved">Settings saved</string>
 
     <!--
     ========================================================================
-    ERROR MESSAGES - ENHANCED
+    ERROR MESSAGES
     ========================================================================
-    Error messages for when operations fail
     -->
-
-    <!-- Generic export failure message -->
     <string name="error_export_failed">Export failed</string>
-
-    <!-- Detailed export error with technical details -->
     <string name="error_export_error">Export error: %s</string>
-
-    <!-- Error when user enters invalid time in settings -->
     <string name="error_invalid_time">Invalid time format</string>
-
-    <!-- FIXED: Enhanced theme error messages -->
     <string name="error_theme_failed">Theme change failed</string>
-    <string name="error_theme_not_found">Theme not found</string>
-    <string name="error_theme_invalid">Invalid theme selection</string>
-
-    <!-- Data errors -->
-    <string name="error_data_corruption">Data file corrupted</string>
-    <string name="error_permission_denied">Permission denied</string>
-    <string name="error_storage_full">Storage full</string>
 
     <!--
     ========================================================================
     DEBUG INFORMATION
     ========================================================================
-    Technical status messages
     -->
-
-    <!-- Debug message when app starts successfully -->
     <string name="debug_core_ready">Core Ready</string>
-
-    <!-- Debug message when sleep session is active -->
     <string name="debug_session_active">Session Active</string>
-
-    <!-- Debug message showing core status with session count -->
-    <string name="debug_core_status">Core Ready - %d sessions</string>
-
-    <!-- FIXED: Enhanced debug messages -->
-    <string name="debug_theme_applied">Theme: %s</string>
-    <string name="debug_data_loaded">Data loaded: %d sessions</string>
-    <string name="debug_export_location">Export: %s</string>
 
     <!--
     ========================================================================
     DEFAULT/FALLBACK VALUES
     ========================================================================
-    Displayed when no data is available
     -->
-
-    <!-- Shown when no data exists yet -->
     <string name="default_no_data">--</string>
-
-    <!-- Shown for zero duration -->
     <string name="default_zero_time">0h 0m</string>
-
-    <!-- Empty string for conditional visibility -->
     <string name="default_empty" />
 
     <!--
     ========================================================================
-    ACCESSIBILITY DESCRIPTIONS - ENHANCED
+    ACCESSIBILITY DESCRIPTIONS
     ========================================================================
-    Screen reader descriptions for visually impaired users
     -->
-
-    <!-- Description of main sleep tracking button -->
     <string name="desc_sleep_button">Start or stop sleep tracking</string>
-
-    <!-- Description of settings button -->
     <string name="desc_settings_button">Open sleep settings</string>
-
-    <!-- Description of export button -->
     <string name="desc_export_button">Export sleep data to file</string>
-
-    <!-- Description of clear data button -->
     <string name="desc_clear_button">Clear all sleep data</string>
-
-    <!-- Description of theme selection button -->
     <string name="desc_theme_button">Change app appearance theme</string>
 
-    <!-- FIXED: Enhanced accessibility for theme selection -->
-    <string name="desc_theme_item">%1$s theme option, %2$s</string>
-    <string name="desc_theme_current">Currently selected theme</string>
-    <string name="desc_theme_preview">Theme color preview</string>
+    <!--
+    ========================================================================
+    FORMATTED TEXT PATTERNS
+    ========================================================================
+    -->
+    <string name="format_time_until_wake">Time until %1$s: %2$s</string>
+    <string name="label_time_until_wake_dynamic">Time until %1$s:</string>
 
     <!--
     ========================================================================
     SECTION HEADERS
     ========================================================================
-    Optional section dividers in the UI
     -->
-
-    <!-- Header for main sleep information area -->
     <string name="section_sleep_info">Sleep Information</string>
-
-    <!-- Header for theme categories -->
-    <string name="section_light_themes">Light Themes</string>
-    <string name="section_dark_themes">Dark Themes</string>
-
-    <!--
-    ========================================================================
-    ADVANCED FEATURES - RESERVED FOR FUTURE
-    ========================================================================
-    Prepared for planned features
-    -->
-
-    <!-- Enhanced sleep tracking -->
-    <string name="label_sleep_quality">Sleep Quality:</string>
-    <string name="label_sleep_efficiency">Efficiency:</string>
-    <string name="label_awakenings">Awakenings:</string>
-
-    <!-- Phone usage tracking -->
-    <string name="label_screen_time">Screen Time:</string>
-    <string name="label_app_opens">App Opens:</string>
-    <string name="label_last_phone_use">Last Used:</string>
-    <string name="status_phone_last_used">Last used: %s</string>
-
-    <!-- Export formats -->
-    <string name="export_format_csv">CSV (Analysis)</string>
-    <string name="export_format_json">JSON (Backup)</string>
-    <string name="export_format_summary">Summary Report</string>
-
-    <!-- Sleep Settings Help Content -->
-    <string name="btn_help">Help</string>
-    <string name="dialog_help_title">Sleep Settings Help</string>
-    <string name="help_sleep_settings">
-<![CDATA[
-<b>Target Sleep Hours:</b><br/>
-How many hours you want to sleep each night. Most adults need 7-9 hours.<br/><br/>
-
-<b>Wake Time:</b><br/>
-When you want to wake up each day. The app calculates your bedtime based on this.<br/><br/>
-
-<b>How it works:</b><br/>
-- Set wake time: 7:00 AM<br/>
-- Set sleep hours: 8 hours<br/>
-- App shows bedtime: 11:00 PM<br/>
-- Work time remaining until 11:00 PM
-]]>
-</string>
-
-    <!-- Update existing string (remove "Enhanced") -->
-    <string name="dialog_settings_title">Sleep Settings</string>
-
-
-    <!--
-    ========================================================================
-    PLURALS - FOR DYNAMIC COUNTS
-    ========================================================================
-    Handle singular/plural forms properly
-    -->
-
-    <plurals name="session_count">
-        <item quantity="zero">No sessions</item>
-        <item quantity="one">1 session</item>
-        <item quantity="other">%d sessions</item>
-    </plurals>
-
-    <plurals name="hours_count">
-        <item quantity="zero">0 hours</item>
-        <item quantity="one">1 hour</item>
-        <item quantity="other">%d hours</item>
-    </plurals>
-
-    <plurals name="themes_available">
-        <item quantity="one">1 theme available</item>
-        <item quantity="other">%d themes available</item>
-    </plurals>
 
 </resources>

@@ -448,8 +448,8 @@ public class ThemeSelectionActivity extends AppCompatActivity {
             case "solarized":
                 setTheme(R.style.Theme_Descansa_Solarized);
                 break;
-            case "everforest":
-                setTheme(R.style.Theme_Descansa_EverforestLight);
+            case "rose_pine":
+                setTheme(R.style.Theme_Descansa_RosePine);
                 break;
             case "amoled":
                 setTheme(R.style.Theme_Descansa_AMOLED);
@@ -464,13 +464,17 @@ public class ThemeSelectionActivity extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
 
+        // FIXED: Apply immediately and notify MainActivity
+        getDelegate().applyDayNight();
         recreateMainActivity();
     }
 
+
     private void recreateMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        // FIXED: Instead of destroying everything, send result back to MainActivity
+        Intent intent = new Intent();
+        intent.putExtra("theme_changed", true);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

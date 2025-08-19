@@ -1,28 +1,28 @@
 #include <jni.h>
 #include <string>
 #include <memory>
-#include <vector>
+#include <android/log.h>
 #include "DescansaCore.h"
-#include "DescansaCoreManager.h"
 
-// Enhanced global instances - both basic and advanced
-static std::unique_ptr<descansa::DescansaCore> g_basic_core;
-static std::unique_ptr<descansa::DescansaCoreManager> g_enhanced_core;
+#define LOG_TAG "DescansaNative"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-// Helper function to ensure cores are initialized
-void ensure_cores_initialized(const std::string& data_path = "") {
-    if (!g_basic_core) {
-        g_basic_core.reset(new descansa::DescansaCore(data_path));
-    }
-    if (!g_enhanced_core) {
-        std::string enhanced_path = data_path.empty() ? "enhanced_data" : data_path + "_enhanced";
-        g_enhanced_core.reset(new descansa::DescansaCoreManager(enhanced_path));
+// SIMPLIFIED: Only one core instance
+static std::unique_ptr<descansa::DescansaCore> g_core;
+
+// Helper function to ensure core is initialized
+void ensure_core_initialized(const std::string& data_path = "") {
+    if (!g_core) {
+        LOGD("Initializing core with path: %s", data_path.c_str());
+        g_core.reset(new descansa::DescansaCore(data_path));
+        LOGD("Core initialized successfully");
     }
 }
 
 extern "C" {
 
-// ========== INITIALIZATION ==========
+// ========== CORE INITIALIZATION ==========
 
 JNIEXPORT void JNICALL
 Java_io_nava_descansa_app_MainActivity_initializeCore(
@@ -32,429 +32,239 @@ Java_io_nava_descansa_app_MainActivity_initializeCore(
     std::string path(path_chars);
     env->ReleaseStringUTFChars(data_path, path_chars);
 
-    // Initialize both cores
-    g_basic_core.reset(new descansa::DescansaCore(path));
-    std::string enhanced_path = path + "_enhanced";
-    g_enhanced_core.reset(new descansa::DescansaCoreManager(enhanced_path));
+    LOGD("=== INITIALIZING CORE ===");
+    LOGD("Data path: %s", path.c_str());
+
+    g_core.reset(new descansa::DescansaCore(path));
+
+    // Log the loaded configuration to verify settings are preserved
+    const auto& config = g_core->get_config();
+    double hours = config.target_sleep_hours.count() / 3600.0;
+    int wake_hour = static_cast<int>(config.target_wake_hour.count());
+    int wake_minute = static_cast<int>(config.target_wake_minute.count());
+
+    LOGD("Core initialized with settings:");
+    LOGD("  - Sleep hours: %.2f", hours);
+    LOGD("  - Wake time: %d:%02d", wake_hour, wake_minute);
+    LOGD("  - Session count: %zu", g_core->get_session_count());
+    LOGD("=== CORE INITIALIZATION COMPLETE ===");
 }
 
-// ========== ENHANCED SESSION MANAGEMENT ==========
+// ========== SESSION MANAGEMENT ==========
 
 JNIEXPORT void JNICALL
 Java_io_nava_descansa_app_MainActivity_startSleepSession(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    g_basic_core->start_sleep_session();
-    g_enhanced_core->start_enhanced_sleep_session();
+    ensure_core_initialized();
+    LOGD("Starting sleep session");
+    g_core->start_sleep_session();
+
+    // FORCE SAVE immediately after starting
+    bool saved = g_core->save_data();
+    LOGD("Session started, data saved: %s", saved ? "true" : "false");
 }
 
 JNIEXPORT void JNICALL
 Java_io_nava_descansa_app_MainActivity_endSleepSession(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    g_basic_core->end_sleep_session();
-    g_enhanced_core->end_enhanced_sleep_session();
+    ensure_core_initialized();
+    LOGD("Ending sleep session");
+    g_core->end_sleep_session();
+
+    // FORCE SAVE immediately after ending
+    bool saved = g_core->save_data();
+    LOGD("Session ended, data saved: %s", saved ? "true" : "false");
 }
 
 JNIEXPORT jboolean JNICALL
 Java_io_nava_descansa_app_MainActivity_isSessionRunning(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_enhanced_core->is_enhanced_session_active();
+    ensure_core_initialized();
+    bool running = g_core->is_session_running();
+    LOGD("Session running check: %s", running ? "true" : "false");
+    return running;
 }
 
-// ========== SLEEP QUALITY TRACKING ==========
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_setSleepQuality(JNIEnv*, jobject, jint quality) {
-    ensure_cores_initialized();
-    auto sleep_quality = static_cast<descansa::SleepQuality>(quality);
-    g_enhanced_core->set_sleep_quality(sleep_quality);
-}
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_addSessionNote(JNIEnv* env, jobject, jstring note) {
-    ensure_cores_initialized();
-    const char* note_chars = env->GetStringUTFChars(note, nullptr);
-    std::string note_str(note_chars);
-    env->ReleaseStringUTFChars(note, note_chars);
-
-    g_enhanced_core->add_session_note(note_str);
-}
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_markAsNap(JNIEnv*, jobject, jboolean is_nap) {
-    ensure_cores_initialized();
-    g_enhanced_core->mark_as_nap(is_nap);
-}
-
-// ========== ENVIRONMENTAL TRACKING ==========
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_updateEnvironment(
-        JNIEnv*, jobject, jdouble temperature, jint noise_level, jint light_level) {
-    ensure_cores_initialized();
-
-    descansa::SleepEnvironment env;
-    env.temperature = temperature;
-    env.noise_level = noise_level;
-    env.light_level = light_level;
-    env.measurement_time = descansa::utils::now();
-
-    g_enhanced_core->update_environment_data(env);
-}
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_recordCaffeineIntake(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    g_enhanced_core->record_caffeine_intake(descansa::utils::now());
-}
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_recordScreenTimeEnd(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    g_enhanced_core->record_screen_time_end(descansa::utils::now());
-}
-
-// ========== ADVANCED ANALYTICS ==========
-
-JNIEXPORT jdouble JNICALL
-Java_io_nava_descansa_app_MainActivity_getSleepScore(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    auto recent_summaries = g_enhanced_core->get_recent_summaries(1);
-    if (recent_summaries.empty()) return 0.0;
-    return recent_summaries.back().get_sleep_score();
-}
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getSleepScoreExplanation(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    std::string explanation = g_enhanced_core->get_sleep_score_explanation();
-    return env->NewStringUTF(explanation.c_str());
-}
-
-JNIEXPORT jdouble JNICALL
-Java_io_nava_descansa_app_MainActivity_getSleepEfficiency(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    auto sessions = g_enhanced_core->get_sessions(1);
-    if (sessions.empty()) return 0.0;
-    return sessions.back().sleep_efficiency;
-}
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getCurrentRecommendations(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto recommendations = g_enhanced_core->get_current_recommendations();
-
-    std::string result;
-    for (size_t i = 0; i < recommendations.size(); ++i) {
-        if (i > 0) result += "\n• ";
-        else result += "• ";
-        result += recommendations[i];
-    }
-
-    return env->NewStringUTF(result.c_str());
-}
-
-// ========== SLEEP DEBT MANAGEMENT ==========
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getSleepDebtFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto debt = g_enhanced_core->calculate_current_sleep_debt();
-
-    if (debt.count() <= 0) {
-        return env->NewStringUTF("No debt");
-    }
-
-    std::string formatted = descansa::utils::format_duration(debt);
-    return env->NewStringUTF(formatted.c_str());
-}
-
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_isInSleepDebt(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_enhanced_core->is_in_sleep_debt();
-}
-
-// ========== ENHANCED GOAL MANAGEMENT ==========
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_setEnhancedSleepGoals(
-        JNIEnv*, jobject, jdouble target_hours, jint bedtime_hour, jint wake_hour,
-        jdouble target_efficiency) {
-    ensure_cores_initialized();
-
-    descansa::SleepGoals goals;
-    goals.target_sleep_duration = descansa::Duration(target_hours * 3600.0);
-    goals.preferred_bedtime = std::chrono::hours(bedtime_hour);
-    goals.preferred_wake_time = std::chrono::hours(wake_hour);
-    goals.target_sleep_efficiency = target_efficiency;
-
-    g_enhanced_core->set_sleep_goals(goals);
-
-    // Sync with basic core
-    g_basic_core->set_target_sleep_hours(target_hours);
-    g_basic_core->set_target_wake_time(wake_hour, 0);
-}
-
-JNIEXPORT jdouble JNICALL
-Java_io_nava_descansa_app_MainActivity_getGoalAdherence(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_enhanced_core->get_goal_adherence_percentage();
-}
-
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_isMeetingGoals(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_enhanced_core->is_meeting_goals();
-}
-
-// ========== PATTERN ANALYSIS ==========
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getSleepPatterns(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto patterns = g_enhanced_core->identify_sleep_patterns();
-
-    std::string result;
-    for (size_t i = 0; i < patterns.size(); ++i) {
-        if (i > 0) result += "\n";
-        result += patterns[i];
-    }
-
-    return env->NewStringUTF(result.c_str());
-}
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getImprovementSuggestions(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto suggestions = g_enhanced_core->get_improvement_suggestions();
-
-    std::string result;
-    for (size_t i = 0; i < suggestions.size(); ++i) {
-        if (i > 0) result += "\n• ";
-        else result += "• ";
-        result += suggestions[i];
-    }
-
-    return env->NewStringUTF(result.c_str());
-}
-
-// ========== STATISTICS ==========
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getWeeklyStats(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto stats = g_enhanced_core->calculate_recent_statistics(7);
-    return env->NewStringUTF(stats.generate_summary_report().c_str());
-}
-
-JNIEXPORT jint JNICALL
-Java_io_nava_descansa_app_MainActivity_getAwakeningsCount(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    auto sessions = g_enhanced_core->get_sessions(1);
-    if (sessions.empty()) return 0;
-    return sessions.back().awakenings_count;
-}
-
-// ========== ENHANCED DATA EXPORT ==========
-
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_exportDetailedData(JNIEnv* env, jobject, jstring export_path) {
-    ensure_cores_initialized();
-
-    const char* path_chars = env->GetStringUTFChars(export_path, nullptr);
-    std::string path(path_chars);
-    env->ReleaseStringUTFChars(export_path, path_chars);
-
-    return g_enhanced_core->export_detailed_data(path);
-}
-
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_exportSummaryCsv(JNIEnv* env, jobject, jstring export_path) {
-    ensure_cores_initialized();
-
-    const char* path_chars = env->GetStringUTFChars(export_path, nullptr);
-    std::string path(path_chars);
-    env->ReleaseStringUTFChars(export_path, path_chars);
-
-    return g_enhanced_core->export_summary_csv(path);
-}
-
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_backupAllData(JNIEnv* env, jobject, jstring backup_path) {
-    ensure_cores_initialized();
-
-    const char* path_chars = env->GetStringUTFChars(backup_path, nullptr);
-    std::string path(path_chars);
-    env->ReleaseStringUTFChars(backup_path, path_chars);
-
-    return g_enhanced_core->backup_all_data(path);
-}
-
-// ========== SYSTEM STATUS ==========
-
-JNIEXPORT jstring JNICALL
-Java_io_nava_descansa_app_MainActivity_getSystemStatus(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    std::string status = g_enhanced_core->get_system_status();
-    return env->NewStringUTF(status.c_str());
-}
-
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_runDiagnostics(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_enhanced_core->run_diagnostics();
-}
-
-// ========== LEGACY COMPATIBILITY ==========
-// Keep existing methods for backward compatibility
+// ========== SETTINGS ==========
 
 JNIEXPORT void JNICALL
 Java_io_nava_descansa_app_MainActivity_setTargetSleepHours(JNIEnv*, jobject, jdouble hours) {
-    ensure_cores_initialized();
-    g_basic_core->set_target_sleep_hours(hours);
-    g_enhanced_core->update_target_sleep_duration(descansa::Duration(hours * 3600.0));
+    ensure_core_initialized();
+    LOGD("=== SETTING TARGET SLEEP HOURS: %.2f ===", hours);
+    g_core->set_target_sleep_hours(hours);
+
+    // Save settings immediately and verify
+    bool saved = g_core->save_data();
+    LOGD("Sleep hours set and saved: %s", saved ? "SUCCESS" : "FAILED");
+
+    // Verify the setting was actually stored
+    const auto& config = g_core->get_config();
+    double stored_hours = config.target_sleep_hours.count() / 3600.0;
+    LOGD("Verification - stored sleep hours: %.2f", stored_hours);
 }
 
 JNIEXPORT void JNICALL
 Java_io_nava_descansa_app_MainActivity_setTargetWakeTime(JNIEnv*, jobject, jint hour, jint minute) {
-    ensure_cores_initialized();
-    g_basic_core->set_target_wake_time(hour, minute);
-    g_enhanced_core->update_preferred_schedule(std::chrono::hours(hour), std::chrono::hours(hour));
+    ensure_core_initialized();
+    LOGD("=== SETTING TARGET WAKE TIME: %d:%02d ===", hour, minute);
+    g_core->set_target_wake_time(hour, minute);
+
+    // Save settings immediately and verify
+    bool saved = g_core->save_data();
+    LOGD("Wake time set and saved: %s", saved ? "SUCCESS" : "FAILED");
+
+    // Verify the setting was actually stored
+    const auto& config = g_core->get_config();
+    int stored_hour = static_cast<int>(config.target_wake_hour.count());
+    int stored_minute = static_cast<int>(config.target_wake_minute.count());
+    LOGD("Verification - stored wake time: %d:%02d", stored_hour, stored_minute);
 }
 
-JNIEXPORT jboolean JNICALL
-Java_io_nava_descansa_app_MainActivity_saveData(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    bool basic_saved = g_basic_core->save_data();
-    bool enhanced_saved = g_enhanced_core->save_all_data();
-    return basic_saved && enhanced_saved;
-}
-
-JNIEXPORT void JNICALL
-Java_io_nava_descansa_app_MainActivity_clearHistory(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    g_basic_core->clear_history();
-    g_enhanced_core->clear_all_data();
+JNIEXPORT jdouble JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentTargetSleepHours(JNIEnv*, jobject) {
+    ensure_core_initialized();
+    const auto& config = g_core->get_config();
+    double hours = config.target_sleep_hours.count() / 3600.0;
+    LOGD("Current target sleep hours: %.1f", hours);
+    return hours;
 }
 
 JNIEXPORT jint JNICALL
-Java_io_nava_descansa_app_MainActivity_getSessionCount(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return static_cast<jint>(g_enhanced_core->get_sessions().size());
+Java_io_nava_descansa_app_MainActivity_getCurrentWakeHour(JNIEnv*, jobject) {
+    ensure_core_initialized();
+    const auto& config = g_core->get_config();
+    int hour = static_cast<int>(config.target_wake_hour.count());
+    LOGD("Current wake hour: %d", hour);
+    return hour;
 }
 
-// Keep all existing formatted methods...
+JNIEXPORT jint JNICALL
+Java_io_nava_descansa_app_MainActivity_getCurrentWakeMinute(JNIEnv*, jobject) {
+    ensure_core_initialized();
+    const auto& config = g_core->get_config();
+    int minute = static_cast<int>(config.target_wake_minute.count());
+    LOGD("Current wake minute: %d", minute);
+    return minute;
+}
+
+// ========== DATA QUERIES ==========
+
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getRemainingWorkTimeFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto duration = g_enhanced_core->get_enhanced_remaining_work_time();
+    ensure_core_initialized();
+    auto duration = g_core->get_remaining_work_time();
     std::string formatted = descansa::utils::format_duration(duration);
+    LOGD("Remaining work time: %s", formatted.c_str());
     return env->NewStringUTF(formatted.c_str());
 }
 
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getLastSleepDurationFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto sessions = g_enhanced_core->get_sessions(1);
-    if (sessions.empty()) {
-        return env->NewStringUTF("0h 0m");
-    }
-    std::string formatted = descansa::utils::format_duration(sessions.back().total_sleep_duration);
+    ensure_core_initialized();
+    auto duration = g_core->get_last_sleep_duration();
+    std::string formatted = descansa::utils::format_duration(duration);
+    LOGD("Last sleep duration: %s", formatted.c_str());
     return env->NewStringUTF(formatted.c_str());
 }
 
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getAverageSleepDurationFormatted(JNIEnv* env, jobject, jint days) {
-    ensure_cores_initialized();
-    auto summaries = g_enhanced_core->get_recent_summaries(days);
-    if (summaries.empty()) {
-        return env->NewStringUTF("0h 0m");
-    }
-
-    descansa::Duration total(0);
-    for (const auto& summary : summaries) {
-        total += summary.total_sleep_time;
-    }
-    descansa::Duration average(total.count() / summaries.size());
-
-    std::string formatted = descansa::utils::format_duration(average);
+    ensure_core_initialized();
+    auto duration = g_core->get_average_sleep_duration(days);
+    std::string formatted = descansa::utils::format_duration(duration);
+    LOGD("Average sleep duration (%d days): %s", days, formatted.c_str());
     return env->NewStringUTF(formatted.c_str());
 }
 
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getCurrentSessionDurationFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto preview = g_enhanced_core->get_current_session_preview();
-    std::string formatted = descansa::utils::format_duration(preview.total_sleep_duration);
+    ensure_core_initialized();
+    auto duration = g_core->get_current_session_duration();
+    std::string formatted = descansa::utils::format_duration(duration);
     return env->NewStringUTF(formatted.c_str());
 }
 
-// Keep sleep period detection methods...
+JNIEXPORT jint JNICALL
+Java_io_nava_descansa_app_MainActivity_getSessionCount(JNIEnv*, jobject) {
+    ensure_core_initialized();
+    int count = static_cast<int>(g_core->get_session_count());
+    LOGD("Session count: %d", count);
+    return count;
+}
+
+// ========== SLEEP PERIOD DETECTION ==========
+
 JNIEXPORT jboolean JNICALL
 Java_io_nava_descansa_app_MainActivity_isInSleepPeriod(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_basic_core->is_in_sleep_period();
+    ensure_core_initialized();
+    bool inSleep = g_core->is_in_sleep_period();
+    LOGD("In sleep period: %s", inSleep ? "true" : "false");
+    return inSleep;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_io_nava_descansa_app_MainActivity_isBeforeTargetWakeTime(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    return g_basic_core->is_before_target_wake_time();
+    ensure_core_initialized();
+    bool beforeWake = g_core->is_before_target_wake_time();
+    LOGD("Before target wake: %s", beforeWake ? "true" : "false");
+    return beforeWake;
 }
 
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getTimeUntilWakeFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto duration = g_basic_core->get_time_until_target_wake();
+    ensure_core_initialized();
+    auto duration = g_core->get_time_until_target_wake();
     std::string formatted = descansa::utils::format_duration(duration);
     return env->NewStringUTF(formatted.c_str());
 }
 
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getTimeUntilNextWakeFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    auto duration = g_basic_core->get_time_until_next_wake();
+    ensure_core_initialized();
+    auto duration = g_core->get_time_until_next_wake();
     std::string formatted = descansa::utils::format_duration(duration);
     return env->NewStringUTF(formatted.c_str());
 }
 
 JNIEXPORT jstring JNICALL
 Java_io_nava_descansa_app_MainActivity_getNextWakeTimeFormatted(JNIEnv* env, jobject) {
-    ensure_cores_initialized();
-    std::string formatted = g_basic_core->get_next_wake_time_formatted();
+    ensure_core_initialized();
+    std::string formatted = g_core->get_next_wake_time_formatted();
     return env->NewStringUTF(formatted.c_str());
 }
 
-JNIEXPORT jdouble JNICALL
-Java_io_nava_descansa_app_MainActivity_getCurrentTargetSleepHours(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    const auto& config = g_basic_core->get_config();
-    return config.target_sleep_hours.count() / 3600.0;
-}
+// ========== DATA MANAGEMENT ==========
 
-JNIEXPORT jint JNICALL
-Java_io_nava_descansa_app_MainActivity_getCurrentWakeHour(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    const auto& config = g_basic_core->get_config();
-    return static_cast<jint>(config.target_wake_hour.count());
-}
+JNIEXPORT jboolean JNICALL
+Java_io_nava_descansa_app_MainActivity_saveData(JNIEnv*, jobject) {
+    if (!g_core) {
+        LOGE("Cannot save data - core not initialized");
+        return false;
+    }
 
-JNIEXPORT jint JNICALL
-Java_io_nava_descansa_app_MainActivity_getCurrentWakeMinute(JNIEnv*, jobject) {
-    ensure_cores_initialized();
-    const auto& config = g_basic_core->get_config();
-    return static_cast<jint>(config.target_wake_minute.count());
+    bool saved = g_core->save_data();
+    LOGD("=== SAVE DATA CALLED - Result: %s ===", saved ? "SUCCESS" : "FAILED");
+    return saved;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_io_nava_descansa_app_MainActivity_exportAnalysisCsv(JNIEnv* env, jobject, jstring export_path) {
-    ensure_cores_initialized();
+    ensure_core_initialized();
 
     const char* path_chars = env->GetStringUTFChars(export_path, nullptr);
     std::string path(path_chars);
     env->ReleaseStringUTFChars(export_path, path_chars);
 
-    return g_basic_core->export_analysis_csv(path);
+    LOGD("Exporting CSV to: %s", path.c_str());
+    bool success = g_core->export_analysis_csv(path);
+    LOGD("Export result: %s", success ? "SUCCESS" : "FAILED");
+
+    return success;
+}
+
+JNIEXPORT void JNICALL
+Java_io_nava_descansa_app_MainActivity_clearHistory(JNIEnv*, jobject) {
+    ensure_core_initialized();
+    LOGD("=== CLEARING ALL DATA ===");
+    g_core->clear_history();
+    LOGD("Data cleared");
 }
 
 } // extern "C"
